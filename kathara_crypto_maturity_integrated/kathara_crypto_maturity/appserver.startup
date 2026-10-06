@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# appserver.startup — application server (backup schedulato, SMTP client, syslog client TLS)
+set -e
+
+ip addr add 10.2.0.10/24 dev eth0
+ip link set eth0 up; ip link set lo up
+ip route add default via 10.2.0.1 dev eth0
+
+chmod +x /opt/backup/run_backup.sh
+chmod +x /opt/mailtest/send_test_mail.sh
+chmod 600 /root/.ssh/id_ed25519
+
+# ── SSH: secondo salto del ProxyJump amministrativo dal bastion ──────────
+# Stessa identità già autorizzata su bastion (bob_admin_ed25519), non una
+# nuova — l'utente mobile che raggiunge bastion può, con la stessa chiave,
+# proseguire fino a qui via ProxyJump.
+id admin >/dev/null 2>&1 || useradd -m -d /home/admin -s /bin/bash admin
+chown root:root /home/admin
+chmod 755 /home/admin
+mkdir -p /home/admin/.ssh
+chown admin:admin /home/admin/.ssh
+chmod 700 /home/admin/.ssh
+chown admin:admin /home/admin/.ssh/authorized_keys
+chmod 600 /home/admin/.ssh/authorized_keys
+
+mkdir -p /run/sshd
+service ssh start
+
+# Accesso di rete ristretto al solo bastion — nessun altro host,
+# nemmeno all'interno della LAN, può raggiungere sshd qui direttamente.
+# Attenzione: l'IP sorgente è 10.7.0.1 (bastion su netbstfw, l'interfaccia
+# che instrada verso internalgw/netlan), NON 10.3.0.2 (bastion su netmgmt,
+# quella visibile da clientext) — bastion è multi-homed, e per la rotta
+# verso appserver il kernel seleziona l'indirizzo dell'interfaccia
+# effettivamente usata per instradare, non un IP "di identità" fisso.
+iptables -A INPUT -p tcp --dport 22 -s 10.7.0.1 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j DROP
+
+# dati applicativi di esempio, oggetto del backup periodico
+mkdir -p /var/www/data
+echo "dato applicativo di esempio - $(date)" > /var/www/data/sample.txt
+
+service cron start 
+nohup rsyslogd -n > /var/log/rsyslogd.log 2>&1 & 
+
+echo "[appserver] avvio completato"
+echo "[appserver] test manuali disponibili:"
+echo "    /opt/backup/run_backup.sh        # backup SFTP verso backupsrv"
+echo "    /opt/mailtest/send_test_mail.sh  # invio SMTP/STARTTLS verso mailsrv"
+echo "    ssh appserver-jump                # secondo salto ProxyJump (da clientext, richiede ~/.ssh/config — vedi TUTORIAL.md)"

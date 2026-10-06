@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package mesh;
+
+// Servizio del service mesh (svca, svcb).
+//
+// - Ping: RPC minimale usata dal loop autonomo svca<->svcb per generare
+//   traffico gRPC/mTLS osservabile con cadenza regolare (invariata rispetto
+//   alla versione originale del laboratorio).
+// - Hello: RPC invocabile da un chiamante esterno al mesh (l'API Gateway,
+//   autenticato mTLS con il proprio certificato) per interrogare lo stato
+//   del nodo. Restituisce anche il CN del certificato del chiamante così
+//   come verificato dal server, utile per l'osservabilità mTLS.
+// - Chain: come Hello, ma il nodo che la riceve inoltra a sua volta una
+//   Hello al proprio peer nel mesh e aggrega entrambe le risposte — dimostra
+//   l'hop end-to-end apigw -> svca -> svcb con mTLS a ogni salto.
+service Mesh {
+    rpc Ping  (PingRequest)  returns (PingReply);
+    rpc Hello (HelloRequest) returns (HelloReply);
+    rpc Chain (ChainRequest) returns (ChainReply);
+}
+
+message PingRequest {
+    string from_service = 1;
+    int64  sequence     = 2;
+}
+
+message PingReply {
+    string from_service = 1;
+    int64  sequence     = 2;
+    string message      = 3;
+}
+
+message HelloRequest {
+    string caller = 1;   // nome/identità di chi invoca (es. "apigw")
+}
+
+message HelloReply {
+    string node     = 1; // nome del nodo che risponde (es. "svca")
+    string message  = 2;
+    string tls_peer = 3; // CN estratto dal certificato client mTLS del chiamante
+}
+
+message ChainRequest {
+    string origin = 1;   // chi ha originato la richiesta (es. "apigw")
+}
+
+message ChainReply {
+    string path              = 1; // es. "apigw -> svca -> svcb"
+    repeated HelloReply hops = 2;
+}

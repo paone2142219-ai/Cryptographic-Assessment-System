@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# internalgw.startup — gateway/router LAN interna
+set -e
+
+ip addr add 10.7.0.2/30 dev eth0   # netbstfw (verso bastion)
+ip addr add 10.2.0.1/24 dev eth1   # LAN interna
+ip link set eth0 up; ip link set eth1 up; ip link set lo up
+
+ip route add default via 10.7.0.1 dev eth0
+
+mkdir -p /shared/internalgw/zeeklogs
+cd /shared/internalgw/zeeklogs
+nohup zeek -i eth1 LogAscii::use_json=T > /var/log/zeek-startup.log 2>&1 &
+
+echo "[internalgw] avvio completato"

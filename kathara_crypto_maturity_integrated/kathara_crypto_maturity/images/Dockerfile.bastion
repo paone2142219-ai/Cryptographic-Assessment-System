@@ -1,0 +1,22 @@
+# images/Dockerfile.bastion — bastion
+# Bastion SSH + sensore Zeek. Nessuna elaborazione locale dei dati raccolti
+# (rimossa deliberatamente in questa fase — vedi bastion.startup).
+FROM debian:bookworm-slim
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        openssh-server iproute2 iptables iputils-ping tcpdump \
+        curl gnupg ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_12/Release.key \
+        | gpg --dearmor -o /usr/share/keyrings/zeek-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/zeek-archive-keyring.gpg] \
+        https://download.opensuse.org/repositories/security:zeek/Debian_12/ /" \
+        > /etc/apt/sources.list.d/security:zeek.list \
+    && apt-get update && apt-get install -y --no-install-recommends zeek \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/opt/zeek/bin:${PATH}"
+RUN mkdir -p /run/sshd
+CMD ["/bin/bash"]

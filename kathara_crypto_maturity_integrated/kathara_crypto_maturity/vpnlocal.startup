@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# vpnlocal.startup — gateway IPsec site-to-site locale
+set -e
+
+ip addr add 10.8.0.2/30 dev eth0   # netvpnlocal (verso mainfw)
+ip addr add 10.5.0.1/30 dev eth1   # nettunnel   (verso vpnremote)
+ip link set eth0 up; ip link set eth1 up; ip link set lo up
+
+
+
+# rotta di default verso mainfw (per raggiungere DMZ/LAN/mesh locali)
+ip route add default via 10.8.0.1 dev eth0
+
+# ── Materiale PKI nella struttura attesa da strongSwan ────────────────────
+mkdir -p /etc/swanctl/x509 /etc/swanctl/x509ca /etc/swanctl/private
+cp /etc/pki/cert.pem /etc/swanctl/x509/cert.pem
+cp /etc/pki/ca.pem   /etc/swanctl/x509ca/ca.pem
+cp /etc/pki/key.pem  /etc/swanctl/private/key.pem
+chmod 600 /etc/swanctl/private/key.pem
+
+mkdir -p /shared/vpnlocal
+/usr/sbin/charon-systemd &
+sleep 3
+swanctl --load-all
+swanctl --initiate --child site-to-site || true
+
+# Zeek: osserva solo IKE_SA_INIT in chiaro sul link nettunnel (il resto,
+# ESP e IKE_AUTH, è cifrato per costruzione — vedi DESIGN.md).
+mkdir -p /shared/vpnlocal/zeeklogs
+cd /shared/vpnlocal/zeeklogs
+nohup zeek -i eth1 LogAscii::use_json=T > /var/log/zeek-startup.log 2>&1 &
+
+VICI_COLLECT_INTERVAL=30 nohup /opt/collector/vici_collector.sh \
+    > /var/log/vici_collector.log 2>&1 &
+
+echo "[vpnlocal] avvio completato"

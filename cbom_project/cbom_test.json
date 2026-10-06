@@ -1,0 +1,2079 @@
+{
+  "generated_at": "2026-10-03T08:37:08.664607+00:00",
+  "source_root": "shared",
+  "summary": {
+    "sensor_ids": [
+      "bastion-eth0",
+      "dmzgw",
+      "internalgw",
+      "mainfw",
+      "mainfw-eth0",
+      "svca",
+      "vpnlocal",
+      "vpnremote"
+    ],
+    "connection_count": 37,
+    "certificate_count": 1,
+    "duplicates_removed": 7,
+    "certificates_correlated": 1,
+    "smtp_correlated": 1,
+    "ipsec_conn_metadata_correlated": 3,
+    "ipsec_static_config_correlated": 3,
+    "asset_hints_applied": 37,
+    "ssh_proxyjump_ctx2_identified": 1
+  },
+  "connections": [
+    {
+      "protocol": "TLS",
+      "sensor_id": "bastion-eth0",
+      "log_kind": "ssl",
+      "uid": "CVjkpz3Kk3yOiwbOt5",
+      "ts": 1788254036.979299,
+      "src_ip": "10.2.0.10",
+      "src_port": 59214,
+      "dst_ip": "10.1.0.11",
+      "dst_port": 25,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "curve": "x25519",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "bastion-eth0",
+        "dmzgw"
+      ],
+      "application_protocol": "SMTP",
+      "smtp_context": {
+        "helo": "appserver",
+        "last_reply": "220 2.0.0 Ready to start TLS",
+        "starttls_confirmed_by_smtp_log": true
+      },
+      "smtp_tls_consistency": "consistent",
+      "asset_hint": {
+        "src_hostname": "appserver",
+        "dst_hostname": "mailsrv",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "dmzgw",
+      "log_kind": "ssl",
+      "uid": "CbuP3b3szZjxFsFwWd",
+      "ts": 1788253680.586894,
+      "src_ip": "10.9.2.1",
+      "src_port": 34602,
+      "dst_ip": "10.1.0.10",
+      "dst_port": 443,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "curve": "x25519",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "dmzgw",
+        "mainfw-eth0"
+      ],
+      "asset_hint": {
+        "src_hostname": "clientext (road warrior, pool admin — IP virtuale)",
+        "dst_hostname": "apigw",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "dmzgw",
+      "log_kind": "ssl",
+      "uid": "C6HfE4EWKvQO1sZpk",
+      "ts": 1788253705.273499,
+      "src_ip": "10.9.2.1",
+      "src_port": 43584,
+      "dst_ip": "10.1.0.10",
+      "dst_port": 443,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "curve": "x25519",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "dmzgw",
+        "mainfw-eth0"
+      ],
+      "asset_hint": {
+        "src_hostname": "clientext (road warrior, pool admin — IP virtuale)",
+        "dst_hostname": "apigw",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "dmzgw",
+      "log_kind": "ssl",
+      "uid": "CXIC9l10m0I1QvtAYf",
+      "ts": 1788253717.07001,
+      "src_ip": "10.9.2.1",
+      "src_port": 56104,
+      "dst_ip": "10.1.0.10",
+      "dst_port": 443,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "curve": "x25519",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "dmzgw",
+        "mainfw-eth0"
+      ],
+      "asset_hint": {
+        "src_hostname": "clientext (road warrior, pool admin — IP virtuale)",
+        "dst_hostname": "apigw",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "internalgw",
+      "log_kind": "ssl",
+      "uid": "CXZFBlULLtY4QDVTd",
+      "ts": 1790951250.408438,
+      "src_ip": "10.2.0.10",
+      "src_port": 35484,
+      "dst_ip": "10.2.0.12",
+      "dst_port": 6514,
+      "tls_version": "TLSv12",
+      "cipher": "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+      "curve": "secp256r1",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [
+        "a756e0405b71e1f676648556f9f8754c5c476fa3ca4e60e7762b61de1650efdd"
+      ],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "exact_fingerprint_match",
+      "has_pfs": null,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "internalgw"
+      ],
+      "certificate": {
+        "fingerprint": "a756e0405b71e1f676648556f9f8754c5c476fa3ca4e60e7762b61de1650efdd",
+        "subject": "CN=logserver.katharalab.local,O=KatharaLab,C=IT",
+        "issuer": "CN=KatharaLab Root CA,O=KatharaLab,C=IT",
+        "key_type": "ecdsa",
+        "key_length": 256,
+        "curve": "prime256v1",
+        "sig_alg": "ecdsa-with-SHA256",
+        "not_valid_after": 1859532588.0,
+        "observed_by": [
+          "internalgw"
+        ]
+      },
+      "asset_hint": {
+        "src_hostname": "appserver",
+        "dst_hostname": "logserver",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "Ckp3fG1HTIZahbRGw3",
+      "ts": 1791016450.191009,
+      "src_ip": "10.4.0.10",
+      "src_port": 53356,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "C7XmdcVuP1IScjyjh",
+      "ts": 1791016450.193666,
+      "src_ip": "10.4.0.11",
+      "src_port": 46602,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "Cv6iqy2BAFlIFt9efk",
+      "ts": 1791016465.203175,
+      "src_ip": "10.4.0.10",
+      "src_port": 46284,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CFypXJGgPKqkjKPm5",
+      "ts": 1791016465.207315,
+      "src_ip": "10.4.0.11",
+      "src_port": 57374,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "C3njMt21mBNxCbhH1f",
+      "ts": 1791016480.214748,
+      "src_ip": "10.4.0.10",
+      "src_port": 32996,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "Csu23l1y4Y6xagSTs9",
+      "ts": 1791016480.219951,
+      "src_ip": "10.4.0.11",
+      "src_port": 38604,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CVsnr22abuaYW38NDd",
+      "ts": 1791016495.227525,
+      "src_ip": "10.4.0.10",
+      "src_port": 40762,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CQBX3O2exaYOnIGlX6",
+      "ts": 1791016495.236792,
+      "src_ip": "10.4.0.11",
+      "src_port": 60384,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CwclZN3TQ7R2Gcd0pg",
+      "ts": 1791016510.239992,
+      "src_ip": "10.4.0.10",
+      "src_port": 35582,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "C5H22n2jo3BMbaSJRc",
+      "ts": 1791016510.248098,
+      "src_ip": "10.4.0.11",
+      "src_port": 53066,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CZBxMm2SdAzTvS5d5i",
+      "ts": 1791016525.251981,
+      "src_ip": "10.4.0.10",
+      "src_port": 53654,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CgU9ZbnBUEEkXUwyi",
+      "ts": 1791016525.260351,
+      "src_ip": "10.4.0.11",
+      "src_port": 56538,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CV0QaQ2VRQoDMdoQee",
+      "ts": 1791016540.262894,
+      "src_ip": "10.4.0.10",
+      "src_port": 56376,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "C2NMby27M14RqwtAM7",
+      "ts": 1791016540.271918,
+      "src_ip": "10.4.0.11",
+      "src_port": 34334,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "Cd7j4U1Frtgi3oRJn3",
+      "ts": 1791016555.27585,
+      "src_ip": "10.4.0.10",
+      "src_port": 54274,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CwYCMn3SJ8EykLurq2",
+      "ts": 1791016555.282495,
+      "src_ip": "10.4.0.11",
+      "src_port": 47588,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "Cbj2Ob0e9PUc1Jrvk",
+      "ts": 1791016570.289718,
+      "src_ip": "10.4.0.10",
+      "src_port": 47212,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CRYHOm4iHSYQOfYrjf",
+      "ts": 1791016570.294532,
+      "src_ip": "10.4.0.11",
+      "src_port": 42194,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "COWwTG1ONJiXqA9ML3",
+      "ts": 1791016585.301511,
+      "src_ip": "10.4.0.10",
+      "src_port": 45992,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CYhsiY6sBCIF5F42k",
+      "ts": 1791016585.30658,
+      "src_ip": "10.4.0.11",
+      "src_port": 36894,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "Cos0NftX3FatBu5m",
+      "ts": 1791016600.314124,
+      "src_ip": "10.4.0.10",
+      "src_port": 45340,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CrvRuE33C6yR0kOAp3",
+      "ts": 1791016600.317068,
+      "src_ip": "10.4.0.11",
+      "src_port": 40238,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "C7uqQQ1QyDt10Kr7yd",
+      "ts": 1791016615.324673,
+      "src_ip": "10.4.0.10",
+      "src_port": 43180,
+      "dst_ip": "10.4.0.11",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svca",
+        "dst_hostname": "svcb",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "TLS",
+      "sensor_id": "svca",
+      "log_kind": "ssl",
+      "uid": "CH56eI3uCC7L7roCtd",
+      "ts": 1791016615.330522,
+      "src_ip": "10.4.0.11",
+      "src_port": 47118,
+      "dst_ip": "10.4.0.10",
+      "dst_port": 50051,
+      "tls_version": "TLSv13",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "curve": "X25519MLKEM768",
+      "resumed": false,
+      "established": true,
+      "cert_chain_fps": [],
+      "client_cert_chain_fps": [],
+      "cert_observation_method": "not_observable_tls13_encrypted_certificate",
+      "has_pfs": true,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "svca"
+      ],
+      "asset_hint": {
+        "src_hostname": "svcb",
+        "dst_hostname": "svca",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "SSH",
+      "sensor_id": "bastion-eth0",
+      "log_kind": "ssh",
+      "uid": "CzqpxiBmgJuLq8R9b",
+      "ts": 1788253645.887308,
+      "src_ip": "10.9.2.1",
+      "src_port": 35968,
+      "dst_ip": "10.3.0.2",
+      "dst_port": 22,
+      "ssh_version": 2,
+      "client_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "server_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "kex_alg": "curve25519-sha256",
+      "host_key_alg": "ssh-ed25519",
+      "host_key_fingerprint": "SHA256:SCG7+iyZFbhO+2EXC692WZ+RqnsD0VpC",
+      "cipher_alg": "chacha20-poly1305@openssh.com",
+      "mac_alg": "hmac-sha2-256-etm@openssh.com",
+      "compression_alg": "none",
+      "auth_success": true,
+      "auth_attempts": 1,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "bastion-eth0",
+        "mainfw-eth0"
+      ],
+      "asset_hint": {
+        "src_hostname": "clientext (road warrior, pool admin — IP virtuale)",
+        "dst_hostname": "bastion",
+        "_source": "external_static_inventory"
+      },
+      "ssh_context": 1
+    },
+    {
+      "protocol": "SSH",
+      "sensor_id": "bastion-eth0",
+      "log_kind": "ssh",
+      "uid": "C1iS1E4dXkL1Q8mVOl",
+      "ts": 1788253654.883695,
+      "src_ip": "10.9.2.1",
+      "src_port": 35980,
+      "dst_ip": "10.3.0.2",
+      "dst_port": 22,
+      "ssh_version": 2,
+      "client_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "server_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "kex_alg": "curve25519-sha256",
+      "host_key_alg": "ssh-ed25519",
+      "host_key_fingerprint": "SHA256:SCG7+iyZFbhO+2EXC692WZ+RqnsD0VpC",
+      "cipher_alg": "chacha20-poly1305@openssh.com",
+      "mac_alg": "hmac-sha2-256-etm@openssh.com",
+      "compression_alg": "none",
+      "auth_success": true,
+      "auth_attempts": 1,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "bastion-eth0",
+        "mainfw-eth0"
+      ],
+      "asset_hint": {
+        "src_hostname": "clientext (road warrior, pool admin — IP virtuale)",
+        "dst_hostname": "bastion",
+        "_source": "external_static_inventory"
+      },
+      "ssh_context": 1
+    },
+    {
+      "protocol": "SSH",
+      "sensor_id": "dmzgw",
+      "log_kind": "ssh",
+      "uid": "CiJyZCLAcuaUDQCL1",
+      "ts": 1788253998.87833,
+      "src_ip": "10.9.2.1",
+      "src_port": 42416,
+      "dst_ip": "10.1.0.12",
+      "dst_port": 22,
+      "ssh_version": 2,
+      "client_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "server_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "kex_alg": "curve25519-sha256",
+      "host_key_alg": "ssh-ed25519",
+      "host_key_fingerprint": "SHA256:rO0tRYO0D+xZ8Ypi9oAbtXWlc27TOpdU",
+      "cipher_alg": "chacha20-poly1305@openssh.com",
+      "mac_alg": "hmac-sha2-256-etm@openssh.com",
+      "compression_alg": "none",
+      "auth_success": true,
+      "auth_attempts": 1,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "dmzgw",
+        "mainfw-eth0"
+      ],
+      "asset_hint": {
+        "src_hostname": "clientext (road warrior, pool admin — IP virtuale)",
+        "dst_hostname": "ftpsrv",
+        "_source": "external_static_inventory"
+      },
+      "ssh_context": 1
+    },
+    {
+      "protocol": "SSH",
+      "sensor_id": "internalgw",
+      "log_kind": "ssh",
+      "uid": "CtW5wT1JdfdKlwism6",
+      "ts": 1788253655.045509,
+      "src_ip": "10.7.0.1",
+      "src_port": 47656,
+      "dst_ip": "10.2.0.10",
+      "dst_port": 22,
+      "ssh_version": 2,
+      "client_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "server_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "kex_alg": "curve25519-sha256",
+      "host_key_alg": "ssh-ed25519",
+      "host_key_fingerprint": "SHA256:qlOgDEkpvZDDYDe1tSzCiYP097/qTqKo",
+      "cipher_alg": "chacha20-poly1305@openssh.com",
+      "mac_alg": "hmac-sha2-256-etm@openssh.com",
+      "compression_alg": "none",
+      "auth_success": true,
+      "auth_attempts": 1,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "internalgw"
+      ],
+      "asset_hint": {
+        "src_hostname": "bastion",
+        "dst_hostname": "appserver",
+        "_source": "external_static_inventory"
+      },
+      "ssh_context": 2
+    },
+    {
+      "protocol": "SSH",
+      "sensor_id": "internalgw",
+      "log_kind": "ssh",
+      "uid": "C56Ajo2xyNnSApmkKk",
+      "ts": 1788253774.686079,
+      "src_ip": "10.2.0.10",
+      "src_port": 39648,
+      "dst_ip": "10.2.0.11",
+      "dst_port": 22,
+      "ssh_version": 2,
+      "client_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "server_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10",
+      "kex_alg": "curve25519-sha256",
+      "host_key_alg": "ssh-ed25519",
+      "host_key_fingerprint": "SHA256:rO0tRYO0D+xZ8Ypi9oAbtXWlc27TOpdU",
+      "cipher_alg": "chacha20-poly1305@openssh.com",
+      "mac_alg": "hmac-sha2-256-etm@openssh.com",
+      "compression_alg": "none",
+      "auth_success": true,
+      "auth_attempts": 1,
+      "pqc_assessment": {
+        "KEX": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "seen_by": [
+        "internalgw"
+      ],
+      "asset_hint": {
+        "src_hostname": "appserver",
+        "dst_hostname": "backupsrv",
+        "_source": "external_static_inventory"
+      },
+      "ssh_context": 1
+    },
+    {
+      "protocol": "IPSEC_IKE",
+      "sensor_id": "mainfw",
+      "conn_name": "rw-admin",
+      "ike_uid": "1",
+      "state": "ESTABLISHED",
+      "auth_method": {
+        "local": "psk",
+        "remote": "psk"
+      },
+      "ike_rekey_time_seconds": 14400,
+      "child_rekey_time_seconds": 1800,
+      "data_plane_pfs_observed": false,
+      "local_id": "mainfw.katharalab.local",
+      "local_addr": "10.0.0.1",
+      "remote_id": "bob@admin.katharalab.local",
+      "remote_addr": "10.0.0.50",
+      "ike_enc": "AES_GCM_16",
+      "ike_enc_bits": 256,
+      "ike_prf": "HMAC_SHA2_384",
+      "ike_group": "ECP_384",
+      "child_sas": [
+        {
+          "protocol": "IPSEC_ESP",
+          "child_name": "rw-admin-child",
+          "child_uid": "1",
+          "state": "INSTALLED",
+          "esp_enc": "AES_GCM_16",
+          "esp_enc_bits": 256,
+          "esp_group": null,
+          "has_pfs": false,
+          "pqc_assessment": {
+            "KEX": {
+              "level": "NOT_APPLICABLE",
+              "quantum_paradigm": "HNDL/SHOR"
+            },
+            "CIPHER": {
+              "level": "SAFE",
+              "quantum_paradigm": "GROVER"
+            },
+            "MAC": {
+              "level": "SAFE",
+              "quantum_paradigm": "GROVER"
+            },
+            "HOSTKEY": {
+              "level": "NOT_APPLICABLE",
+              "quantum_paradigm": "N/A"
+            },
+            "HASH": {
+              "level": "NOT_APPLICABLE",
+              "quantum_paradigm": "N/A"
+            }
+          },
+          "declared_esp_proposal": "aes256gcm16-ecp384",
+          "declared_dh_group": "ECP_384",
+          "declared_pfs_capable": true
+        }
+      ],
+      "pqc_assessment": {
+        "KEX": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "declared_ike_proposal": "aes256gcm16-prfsha384-ecp384",
+      "asset_hint": {
+        "local_hostname": "mainfw",
+        "remote_hostname": "clientext",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "IPSEC_IKE",
+      "sensor_id": "vpnlocal",
+      "conn_name": "site-to-site",
+      "ike_uid": "2",
+      "state": "ESTABLISHED",
+      "auth_method": {
+        "local": "pubkey",
+        "remote": "pubkey"
+      },
+      "ike_rekey_time_seconds": 14400,
+      "child_rekey_time_seconds": 1200,
+      "data_plane_pfs_observed": false,
+      "local_id": "vpnlocal.katharalab.local",
+      "local_addr": "10.5.0.1",
+      "remote_id": "vpnremote.katharalab.local",
+      "remote_addr": "10.5.0.2",
+      "ike_enc": "AES_GCM_16",
+      "ike_enc_bits": 256,
+      "ike_prf": "HMAC_SHA2_384",
+      "ike_group": "ECP_384",
+      "child_sas": [
+        {
+          "protocol": "IPSEC_ESP",
+          "child_name": "site-to-site",
+          "child_uid": "1",
+          "state": "INSTALLED",
+          "esp_enc": "AES_GCM_16",
+          "esp_enc_bits": 256,
+          "esp_group": null,
+          "has_pfs": false,
+          "pqc_assessment": {
+            "KEX": {
+              "level": "NOT_APPLICABLE",
+              "quantum_paradigm": "HNDL/SHOR"
+            },
+            "CIPHER": {
+              "level": "SAFE",
+              "quantum_paradigm": "GROVER"
+            },
+            "MAC": {
+              "level": "SAFE",
+              "quantum_paradigm": "GROVER"
+            },
+            "HOSTKEY": {
+              "level": "NOT_APPLICABLE",
+              "quantum_paradigm": "N/A"
+            },
+            "HASH": {
+              "level": "NOT_APPLICABLE",
+              "quantum_paradigm": "N/A"
+            }
+          },
+          "declared_esp_proposal": "aes256gcm16-ecp256",
+          "declared_dh_group": "ECP_256",
+          "declared_pfs_capable": true
+        }
+      ],
+      "pqc_assessment": {
+        "KEX": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "declared_ike_proposal": "aes256gcm16-prfsha384-ecp384",
+      "asset_hint": {
+        "local_hostname": "vpnlocal",
+        "remote_hostname": "vpnremote",
+        "_source": "external_static_inventory"
+      }
+    },
+    {
+      "protocol": "IPSEC_IKE",
+      "sensor_id": "vpnremote",
+      "conn_name": "site-to-site",
+      "ike_uid": "2",
+      "state": "ESTABLISHED",
+      "auth_method": {
+        "local": "pubkey",
+        "remote": "pubkey"
+      },
+      "ike_rekey_time_seconds": 14400,
+      "child_rekey_time_seconds": 1200,
+      "data_plane_pfs_observed": false,
+      "local_id": "vpnremote.katharalab.local",
+      "local_addr": "10.5.0.2",
+      "remote_id": "vpnlocal.katharalab.local",
+      "remote_addr": "10.5.0.1",
+      "ike_enc": "AES_GCM_16",
+      "ike_enc_bits": 256,
+      "ike_prf": "HMAC_SHA2_384",
+      "ike_group": "ECP_384",
+      "child_sas": [
+        {
+          "protocol": "IPSEC_ESP",
+          "child_name": "site-to-site",
+          "child_uid": "1",
+          "state": "INSTALLED",
+          "esp_enc": "AES_GCM_16",
+          "esp_enc_bits": 256,
+          "esp_group": null,
+          "has_pfs": false,
+          "pqc_assessment": {
+            "KEX": {
+              "level": "NOT_APPLICABLE",
+              "quantum_paradigm": "HNDL/SHOR"
+            },
+            "CIPHER": {
+              "level": "SAFE",
+              "quantum_paradigm": "GROVER"
+            },
+            "MAC": {
+              "level": "SAFE",
+              "quantum_paradigm": "GROVER"
+            },
+            "HOSTKEY": {
+              "level": "NOT_APPLICABLE",
+              "quantum_paradigm": "N/A"
+            },
+            "HASH": {
+              "level": "NOT_APPLICABLE",
+              "quantum_paradigm": "N/A"
+            }
+          },
+          "declared_esp_proposal": "aes256gcm16-ecp256",
+          "declared_dh_group": "ECP_256",
+          "declared_pfs_capable": true
+        }
+      ],
+      "pqc_assessment": {
+        "KEX": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "CIPHER": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "MAC": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        },
+        "HOSTKEY": {
+          "level": "UNKNOWN",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "SAFE",
+          "quantum_paradigm": "GROVER"
+        }
+      },
+      "declared_ike_proposal": "aes256gcm16-prfsha384-ecp384",
+      "asset_hint": {
+        "local_hostname": "vpnremote",
+        "remote_hostname": "vpnlocal",
+        "_source": "external_static_inventory"
+      }
+    }
+  ],
+  "certificates": [
+    {
+      "fingerprint": "a756e0405b71e1f676648556f9f8754c5c476fa3ca4e60e7762b61de1650efdd",
+      "subject": "CN=logserver.katharalab.local,O=KatharaLab,C=IT",
+      "issuer": "CN=KatharaLab Root CA,O=KatharaLab,C=IT",
+      "not_valid_before": 1788252588.0,
+      "not_valid_after": 1859532588.0,
+      "key_alg": "id-ecPublicKey",
+      "sig_alg": "ecdsa-with-SHA256",
+      "key_type": "ecdsa",
+      "key_length": 256,
+      "curve": "prime256v1",
+      "san_dns": [
+        "logserver.katharalab.local"
+      ],
+      "san_ip": [
+        "10.2.0.12"
+      ],
+      "host_cert": true,
+      "client_cert": false,
+      "observed_by": [
+        "internalgw"
+      ],
+      "pqc_assessment": {
+        "KEX": {
+          "level": "NOT_APPLICABLE",
+          "quantum_paradigm": "N/A"
+        },
+        "CIPHER": {
+          "level": "NOT_APPLICABLE",
+          "quantum_paradigm": "N/A"
+        },
+        "MAC": {
+          "level": "NOT_APPLICABLE",
+          "quantum_paradigm": "N/A"
+        },
+        "HOSTKEY": {
+          "level": "SAFE",
+          "quantum_paradigm": "HNDL/SHOR"
+        },
+        "HASH": {
+          "level": "MARGINAL",
+          "quantum_paradigm": "GROVER"
+        }
+      }
+    }
+  ]
+}

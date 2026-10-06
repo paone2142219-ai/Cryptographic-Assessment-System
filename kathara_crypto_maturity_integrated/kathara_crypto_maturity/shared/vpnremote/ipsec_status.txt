@@ -1,0 +1,11 @@
+site-to-site: #2, ESTABLISHED, IKEv2, 32699107783fdde4_i e54c8a0abfe6aee0_r*
+  local  'vpnremote.katharalab.local' @ 10.5.0.2[4500]
+  remote 'vpnlocal.katharalab.local' @ 10.5.0.1[4500]
+  AES_GCM_16-256/PRF_HMAC_SHA2_384/ECP_384
+  established 330s ago, rekeying in 14020s
+  site-to-site: #1, reqid 1, INSTALLED, TUNNEL, ESP:AES_GCM_16-256
+    installed 330s ago, rekeying in 733s, expires in 1170s
+    in  c4e45ad6,      0 bytes,     0 packets
+    out c6f785d7,      0 bytes,     0 packets
+    local  192.168.0.0/24
+    remote 10.1.0.0/24 10.2.0.0/24 10.4.0.0/24

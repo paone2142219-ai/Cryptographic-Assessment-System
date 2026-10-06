@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# backupsrv.startup — destinazione SFTP dei backup schedulati
+set -e
+
+ip addr add 10.2.0.11/24 dev eth0
+ip link set eth0 up; ip link set lo up
+ip route add default via 10.2.0.1 dev eth0
+
+id backupuser &>/dev/null || useradd -M -d /home/backupuser -s /usr/sbin/nologin backupuser
+mkdir -p /home/backupuser/incoming
+chown root:root /home/backupuser
+chmod 755 /home/backupuser
+chown backupuser:backupuser /home/backupuser/incoming
+chmod 700 /home/backupuser/incoming
+
+mkdir -p /home/backupuser/.ssh
+chown root:root /home/backupuser/.ssh
+chmod 755 /home/backupuser/.ssh
+chmod 644 /home/backupuser/.ssh/authorized_keys
+
+mkdir -p /run/sshd
+service ssh start
+
+mkdir -p /shared/backupsrv
+echo "[backupsrv] avvio completato — SFTP chroot su 10.2.0.11:22 (utente backupuser)"

@@ -1,0 +1,34 @@
+# /etc/postfix/main.cf — mailsrv
+# Mail server DMZ. STARTTLS obbligatorio (smtpd_tls_security_level=encrypt):
+# nessun messaggio viene accettato in chiaro, coerente col caso d'uso
+# "Servizio di posta elettronica — SMTP/STARTTLS (appserver ↔ mailsrv)".
+
+myhostname = mailsrv.katharalab.local
+mydomain = katharalab.local
+myorigin = $mydomain
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+inet_interfaces = all
+inet_protocols = ipv4
+
+# Certificato RSA-2048 (scelta realistica ma non ottimale — vedi gen_pki.sh):
+# utile a scopo di assessment, il framework CBOM la classificherà come
+# VULNERABLE su Shor pur essendo classicamente adeguata.
+smtpd_tls_cert_file = /etc/pki/cert.pem
+smtpd_tls_key_file  = /etc/pki/key.pem
+smtpd_tls_CAfile    = /etc/pki/ca.pem
+
+smtpd_tls_security_level = encrypt
+smtpd_tls_auth_only = yes
+smtpd_tls_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
+smtpd_tls_mandatory_ciphers = high
+smtpd_tls_loglevel = 1
+smtpd_tls_received_header = yes
+smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
+
+smtp_tls_security_level = may
+smtp_tls_loglevel = 1
+
+alias_maps = hash:/etc/aliases
+mailbox_size_limit = 0
+recipient_delimiter = +

@@ -1,0 +1,11 @@
+rw-admin: #1, ESTABLISHED, IKEv2, eb22cf8c5c8e350b_i b3145c3fb0afd6a4_r*
+  local  'mainfw.katharalab.local' @ 10.0.0.1[4500]
+  remote 'bob@admin.katharalab.local' @ 10.0.0.50[4500] [10.9.2.1]
+  AES_GCM_16-256/PRF_HMAC_SHA2_384/ECP_384
+  established 201s ago, rekeying in 12891s
+  rw-admin-child: #1, reqid 1, INSTALLED, TUNNEL, ESP:AES_GCM_16-256
+    installed 201s ago, rekeying in 1550s, expires in 1779s
+    in  c2af0a68,      0 bytes,     0 packets
+    out c7442192,      0 bytes,     0 packets
+    local  0.0.0.0/0
+    remote 10.9.2.1/32

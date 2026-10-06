@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# mainfw.startup — firewall perimetrale + concentratore VPN road-warrior IKEv2
+set -e
+
+# ── Indirizzamento ────────────────────────────────────────────────────────
+ip addr add 10.0.0.1/24  dev eth0   # netinternet
+ip addr add 10.6.0.1/30  dev eth1   # netfwdmz  (verso dmzgw)
+ip addr add 10.8.0.1/30  dev eth2   # netvpnlocal (verso vpnlocal)
+ip addr add 10.3.0.1/30  dev eth3   # netmgmt (verso bastion)
+ip link set eth0 up; ip link set eth1 up; ip link set eth2 up; ip link set eth3 up
+ip link set lo up
+
+
+# ── Rotte statiche verso le reti raggiungibili solo tramite vpnlocal/dmzgw/bastion ──
+ip route add 10.5.0.0/30    via 10.8.0.2 dev eth2 2>/dev/null || true   # nettunnel
+ip route add 192.168.0.0/24 via 10.8.0.2 dev eth2 2>/dev/null || true  # REMOTE SITE via vpnlocal
+ip route add 10.1.0.0/24    via 10.6.0.2 dev eth1 2>/dev/null || true  # DMZ via dmzgw
+ip route add 10.4.0.0/24    via 10.6.0.2 dev eth1 2>/dev/null || true  # service mesh via dmzgw/apigw
+ip route add 10.7.0.0/30    via 10.3.0.2 dev eth3 2>/dev/null || true  # netbstfw via bastion
+ip route add 10.2.0.0/24    via 10.3.0.2 dev eth3 2>/dev/null || true  # LAN interna via bastion
+
+# ── strongSwan / swanctl ───────────────────────────────────────────────────
+mkdir -p /shared/mainfw
+chmod 600 /etc/swanctl/conf.d/secrets.conf
+/usr/sbin/charon-systemd &
+sleep 3
+swanctl --load-all
+
+# ── ACL differenziata employee/admin sui pool road-warrior ───────────────
+chmod +x /opt/firewall/road-warrior-acl.sh
+/opt/firewall/road-warrior-acl.sh
+
+mkdir -p /shared/mainfw-eth0/zeeklogs
+
+cd /shared/mainfw-eth0/zeeklogs
+nohup zeek -i eth0 \
+    LogAscii::use_json=T \
+    Log::default_rotation_interval=1hr \
+    > /var/log/zeek-eth0.log 2>&1 &
+
+# Nessun sensore su eth1 (netfwdmz): il traffico decifrato che vi transita,
+# diretto alla DMZ, è già coperto una volta sola da dmzgw — vedi DESIGN.md.
+
+# ── Collector attivo VICI (swanctl --list-sas) ────────────────────────────
+VICI_COLLECT_INTERVAL=30 nohup /opt/collector/vici_collector.sh \
+    > /var/log/vici_collector.log 2>&1 &
+
+echo "[mainfw] avvio completato"

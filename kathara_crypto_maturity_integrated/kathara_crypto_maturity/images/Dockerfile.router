@@ -1,0 +1,20 @@
+# images/Dockerfile.router — dmzgw, internalgw
+# Router/gateway con solo Zeek per l'osservazione passiva, nessun servizio
+# applicativo. Vantage point di rete, non endpoint.
+FROM debian:bookworm-slim
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        iproute2 iptables iputils-ping tcpdump curl gnupg ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_12/Release.key \
+        | gpg --dearmor -o /usr/share/keyrings/zeek-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/zeek-archive-keyring.gpg] \
+        https://download.opensuse.org/repositories/security:zeek/Debian_12/ /" \
+        > /etc/apt/sources.list.d/security:zeek.list \
+    && apt-get update && apt-get install -y --no-install-recommends zeek \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/opt/zeek/bin:${PATH}"
+CMD ["/bin/bash"]

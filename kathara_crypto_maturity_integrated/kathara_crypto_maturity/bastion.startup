@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# bastion.startup — bastion host SSH + sensore di rete (Zeek)
+#
+# Nota di design: bastion NON esegue più alcuna elaborazione/aggregazione
+# dei dati raccolti dai sensori — quella fase è stata deliberatamente
+# rimossa per concentrarsi, nella fase attuale del lavoro, sulla sola
+# infrastruttura di rete e sulla raccolta distribuita "grezza". bastion
+# resta un sensore come dmzgw/internalgw/mainfw: scrive i propri log Zeek
+# sotto /shared/, senza ulteriore elaborazione locale.
+set -e
+
+# Interfaccia bridged (bastion[bridged]="true" in lab.conf): riceve un IP
+# via DHCP dal bridge Docker dell'host, ma la risoluzione DNS non è
+# garantita di default dentro il container — occorre impostarla a mano.
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
+ip addr add 10.3.0.2/30 dev eth0   # netmgmt   (verso mainfw)
+ip addr add 10.7.0.1/30 dev eth1   # netbstfw  (verso internalgw)
+ip link set eth0 up; ip link set eth1 up; ip link set lo up
+
+
+ip route add 10.9.1.0/24 via 10.3.0.1 dev eth0 2>/dev/null || true   # pool employee (per il ritorno)
+ip route add 10.9.2.0/24 via 10.3.0.1 dev eth0 2>/dev/null || true   # pool admin
+ip route add 10.2.0.0/24 via 10.7.0.2 dev eth1 2>/dev/null || true   # LAN interna via internalgw
+ip route add 10.1.0.0/24 via 10.3.0.1 dev eth0 2>/dev/null || true   # DMZ via mainfw
+ip route add 10.4.0.0/24 via 10.3.0.1 dev eth0 2>/dev/null || true   # service mesh via mainfw
+
+
+
+mkdir -p /run/sshd
+service ssh start
+
+id admin &>/dev/null || useradd -m -d /home/admin -s /bin/bash admin
+chown root:root /home/admin
+chmod 755 /home/admin
+mkdir -p /home/admin/.ssh
+chown admin:admin /home/admin/.ssh
+chmod 700 /home/admin/.ssh
+chown admin:admin /home/admin/.ssh/authorized_keys
+chmod 600 /home/admin/.ssh/authorized_keys
+
+mkdir -p /shared/bastion-eth0/zeeklogs
+
+cd /shared/bastion-eth0/zeeklogs
+nohup zeek -i eth0 LogAscii::use_json=T > /var/log/zeek-eth0.log 2>&1 &
+
+# Nessun sensore su eth1 (netbstfw): il traffico di puro transito LAN↔DMZ
+# è già coperto una volta sola da internalgw/dmzgw — vedi DESIGN.md.
+
+echo "[bastion] avvio completato — log Zeek in /shared/bastion-eth0/"

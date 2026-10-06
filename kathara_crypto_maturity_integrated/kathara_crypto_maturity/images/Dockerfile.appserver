@@ -1,0 +1,9 @@
+# images/Dockerfile.appserver — appserver
+FROM debian:bookworm-slim
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        openssh-client openssh-server rsyslog rsyslog-gnutls cron swaks \
+        libnet-ssleay-perl \
+        iproute2 iptables iputils-ping ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+CMD ["/bin/bash"]

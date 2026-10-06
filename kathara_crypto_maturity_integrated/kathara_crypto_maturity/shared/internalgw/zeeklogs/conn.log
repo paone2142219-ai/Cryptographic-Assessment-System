@@ -1,0 +1,1 @@
+{"ts":1791016435.584889,"uid":"CB8wEj43QLfcstHx3h","id.orig_h":"10.2.0.10","id.orig_p":59844,"id.resp_h":"10.2.0.12","id.resp_p":6514,"proto":"tcp","duration":0.00002002716064453125,"orig_bytes":0,"resp_bytes":0,"conn_state":"REJ","local_orig":true,"local_resp":true,"missed_bytes":0,"history":"Sr","orig_pkts":1,"orig_ip_bytes":60,"resp_pkts":1,"resp_ip_bytes":40,"ip_proto":6}

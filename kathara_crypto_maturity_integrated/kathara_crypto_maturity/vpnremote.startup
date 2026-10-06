@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# vpnremote.startup — gateway IPsec site-to-site remoto
+set -e
+
+ip addr add 10.5.0.2/30    dev eth0   # nettunnel    (verso vpnlocal)
+ip addr add 192.168.0.1/24 dev eth1   # netremote    (verso remotehost)
+ip link set eth0 up; ip link set eth1 up; ip link set lo up
+
+
+mkdir -p /etc/swanctl/x509 /etc/swanctl/x509ca /etc/swanctl/private
+cp /etc/pki/cert.pem /etc/swanctl/x509/cert.pem
+cp /etc/pki/ca.pem   /etc/swanctl/x509ca/ca.pem
+cp /etc/pki/key.pem  /etc/swanctl/private/key.pem
+chmod 600 /etc/swanctl/private/key.pem
+
+mkdir -p /shared/vpnremote
+/usr/sbin/charon-systemd &
+sleep 3
+swanctl --load-all
+# responder: non avvia l'iniziazione, attende vpnlocal (start_action=start su vpnlocal è sufficiente)
+
+mkdir -p /shared/vpnremote/zeeklogs
+cd /shared/vpnremote/zeeklogs
+nohup zeek -i eth0 LogAscii::use_json=T > /var/log/zeek-startup.log 2>&1 &
+
+VICI_COLLECT_INTERVAL=30 nohup /opt/collector/vici_collector.sh \
+    > /var/log/vici_collector.log 2>&1 &
+
+echo "[vpnremote] avvio completato"

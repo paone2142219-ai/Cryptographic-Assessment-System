@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# svcb.startup — nodo del service mesh (mTLS su gRPC)
+set -e
+
+ip addr add 10.4.0.11/24 dev eth0
+ip link set eth0 up; ip link set lo up
+ip route add default via 10.4.0.1 dev eth0
+
+export MESH_SERVICE_NAME=svcb
+export MESH_CERT_DIR=/etc/pki
+export MESH_LISTEN_PORT=50051
+export MESH_PEER_HOST=10.4.0.10
+export MESH_PEER_PORT=50051
+
+nohup python3 /opt/mesh/mesh_node.py > /var/log/mesh_node.log 2>&1 &
+
+echo "[svcb] avvio completato — mTLS gRPC su 10.4.0.11:50051, peer 10.4.0.10:50051"

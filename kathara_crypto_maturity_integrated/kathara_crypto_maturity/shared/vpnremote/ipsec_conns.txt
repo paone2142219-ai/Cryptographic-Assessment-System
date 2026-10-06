@@ -1,0 +1,11 @@
+site-to-site: IKEv2, no reauthentication, rekeying every 14400s, dpd delay 20s
+  local:  10.5.0.2
+  remote: 10.5.0.1
+  local public key authentication:
+    id: vpnremote.katharalab.local
+    certs: C=IT, O=KatharaLab, CN=vpnremote.katharalab.local
+  remote public key authentication:
+    id: vpnlocal.katharalab.local
+  site-to-site: TUNNEL, rekeying every 1200s, dpd action is start
+    local:  192.168.0.0/24
+    remote: 10.1.0.0/24 10.2.0.0/24 10.4.0.0/24

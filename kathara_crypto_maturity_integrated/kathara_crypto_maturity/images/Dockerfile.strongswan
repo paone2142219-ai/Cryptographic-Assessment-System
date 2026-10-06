@@ -1,0 +1,44 @@
+# images/Dockerfile.strongswan
+# Immagine per gateway IPsec/IKEv2 (mainfw come concentratore road-warrior,
+# vpnlocal/vpnremote come gateway site-to-site). Include strongSwan/swanctl,
+# iptables per le ACL, e Zeek per l'osservazione passiva di IKE_SA_INIT.
+FROM debian:bookworm-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        strongswan-swanctl \
+        charon-systemd \
+        libstrongswan-standard-plugins \
+        libcharon-extra-plugins \
+        iproute2 \
+        iptables \
+        iputils-ping \
+        tcpdump \
+        curl \
+        gnupg \
+        python3 \
+        python3-pip \
+        openssh-client \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Zeek (repo ufficiale del progetto openSUSE Build Service — security:zeek).
+# Se l'host di build non ha connettività verso download.opensuse.org, commentare
+# questo blocco e installare Zeek manualmente (vedi anche Dockerfile.router,
+# che usa lo stesso blocco per i nodi di solo-monitoraggio).
+RUN curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_12/Release.key \
+        | gpg --dearmor -o /usr/share/keyrings/zeek-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/zeek-archive-keyring.gpg] \
+        https://download.opensuse.org/repositories/security:zeek/Debian_12/ /" \
+        > /etc/apt/sources.list.d/security:zeek.list \
+    && apt-get update && apt-get install -y --no-install-recommends zeek \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/opt/zeek/bin:${PATH}"
+
+RUN mkdir -p /opt/collector
+COPY vici_collector.sh /opt/collector/vici_collector.sh
+RUN chmod +x /opt/collector/vici_collector.sh
+
+CMD ["/bin/bash"]

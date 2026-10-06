@@ -1,0 +1,20 @@
+rw-employee: IKEv2, no reauthentication, rekeying every 14400s, dpd delay 30s
+  local:  %any
+  remote: %any
+  local pre-shared key authentication:
+    id: mainfw.katharalab.local
+  remote pre-shared key authentication:
+    id: *@employee.katharalab.local
+  rw-employee-child: TUNNEL, rekeying every 1800s, dpd action is none
+    local:  0.0.0.0/0
+    remote: dynamic
+rw-admin: IKEv2, no reauthentication, rekeying every 14400s, dpd delay 30s
+  local:  %any
+  remote: %any
+  local pre-shared key authentication:
+    id: mainfw.katharalab.local
+  remote pre-shared key authentication:
+    id: *@admin.katharalab.local
+  rw-admin-child: TUNNEL, rekeying every 1800s, dpd action is none
+    local:  0.0.0.0/0
+    remote: dynamic

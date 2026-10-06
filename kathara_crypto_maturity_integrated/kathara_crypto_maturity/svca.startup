@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# svca.startup — nodo del service mesh (mTLS su gRPC)
+set -e
+
+ip addr add 10.4.0.10/24 dev eth0
+ip link set eth0 up; ip link set lo up
+ip route add default via 10.4.0.1 dev eth0
+
+export MESH_SERVICE_NAME=svca
+export MESH_CERT_DIR=/etc/pki
+export MESH_LISTEN_PORT=50051
+export MESH_PEER_HOST=10.4.0.11
+export MESH_PEER_PORT=50051
+# Nessun MESH_PEER_TLS_NAME: l'IP 10.4.0.11 è già nel SAN del certificato
+# di svcb (vedi gen_pki.sh), la verifica hostname passa senza override.
+
+nohup python3 /opt/mesh/mesh_node.py > /var/log/mesh_node.log 2>&1 &
+
+mkdir -p /shared/svca/zeeklogs
+cd /shared/svca/zeeklogs
+nohup zeek -i eth0 LogAscii::use_json=T > /var/log/zeek-eth0.log 2>&1 &
+
+echo "[svca] avvio completato — mTLS gRPC su 10.4.0.10:50051, peer 10.4.0.11:50051"

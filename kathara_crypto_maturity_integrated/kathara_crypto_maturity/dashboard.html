@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBOM // Crypto Posture Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080b11;
+  --bg-grid: #0d121a;
+  --panel:#0f151f;
+  --panel-2:#131a26;
+  --border:#1d2735;
+  --border-bright:#2a3a52;
+  --text:#dfe8f0;
+  --text-dim:#7688a0;
+  --text-faint:#4a5a72;
+  --safe:#33d68a;
+  --safe-dim:#1c5c42;
+  --marginal:#f0b93f;
+  --marginal-dim:#6b5620;
+  --vulnerable:#ff8a3d;
+  --vulnerable-dim:#6b3e18;
+  --broken:#ff4d5e;
+  --broken-dim:#6b1f28;
+  --unknown:#5b6b82;
+  --unknown-dim:#2e3a4a;
+  --na:#374357;
+  --cyan:#4fd6ff;
+  --cyan-dim:#153a47;
+  font-size:15px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background:
+    radial-gradient(ellipse 1200px 600px at 15% -10%, rgba(79,214,255,0.05), transparent),
+    radial-gradient(ellipse 1000px 800px at 100% 100%, rgba(51,214,138,0.04), transparent),
+    var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Mono', monospace;
+  min-height:100vh;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
+.hud{font-family:'Rajdhani',sans-serif;}
+::selection{background:var(--cyan-dim); color:var(--cyan);}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border-bright); border-radius:2px;}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 28px; border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(19,26,38,0.6), transparent);
+  position:sticky; top:0; z-index:50; backdrop-filter:blur(8px);
+}
+.brand{display:flex; align-items:center; gap:14px;}
+.brand-mark{
+  width:36px; height:36px; border:1.5px solid var(--safe); border-radius:3px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; flex-shrink:0;
+}
+.brand-mark::before{
+  content:''; position:absolute; inset:5px; border:1px solid var(--safe-dim);
+}
+.brand-mark span{font-family:'Rajdhani',sans-serif; font-weight:700; color:var(--safe); font-size:14px;}
+.brand-text h1{
+  font-family:'Rajdhani',sans-serif; font-weight:700; font-size:20px;
+  letter-spacing:0.06em; color:var(--text); line-height:1.1;
+}
+.brand-text .sub{font-size:11px; color:var(--text-dim); letter-spacing:0.08em; text-transform:uppercase; margin-top:2px;}
+.header-right{display:flex; align-items:center; gap:18px;}
+.meta-item{text-align:right;}
+.meta-item .label{font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.1em;}
+.meta-item .value{font-size:13px; color:var(--text-dim); margin-top:2px;}
+.status-pill{
+  display:flex; align-items:center; gap:6px; padding:6px 12px;
+  border:1px solid var(--safe-dim); border-radius:20px; background:rgba(51,214,138,0.06);
+  font-size:11px; color:var(--safe); letter-spacing:0.05em; text-transform:uppercase;
+  font-family:'Rajdhani',sans-serif; font-weight:600;
+}
+.status-dot{width:6px; height:6px; border-radius:50%; background:var(--safe); box-shadow:0 0 6px var(--safe); animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.35;}}
+
+.btn{
+  font-family:'Rajdhani',sans-serif; font-weight:600; letter-spacing:0.04em;
+  font-size:12px; text-transform:uppercase; padding:8px 16px;
+  background:var(--panel-2); border:1px solid var(--border-bright); color:var(--text-dim);
+  border-radius:3px; cursor:pointer; transition:all .15s ease;
+}
+.btn:hover{border-color:var(--cyan); color:var(--cyan); background:rgba(79,214,255,0.06);}
+
+main{max-width:1440px; margin:0 auto; padding:26px 28px 60px;}
+
+/* ── KPI strip ──────────────────────────────────────────────────── */
+.kpi-row{display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:22px;}
+.kpi{
+  background:var(--panel); border:1px solid var(--border); border-radius:4px;
+  padding:16px 18px; position:relative; overflow:hidden;
+}
+.kpi::before{
+  content:''; position:absolute; top:0; left:0; width:2px; height:100%;
+  background:var(--kpi-accent, var(--cyan));
+}
+.kpi .k-label{font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.09em;}
+.kpi .k-value{
+  font-family:'Rajdhani',sans-serif; font-weight:700; font-size:32px; line-height:1.15;
+  color:var(--kpi-accent, var(--text)); margin-top:4px;
+}
+.kpi .k-sub{font-size:10px; color:var(--text-faint); margin-top:3px;}
+
+/* ── Grid layout ────────────────────────────────────────────────── */
+.grid-2{display:grid; grid-template-columns:1.05fr 1fr; gap:16px; margin-bottom:16px;}
+.panel{background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:20px;}
+.panel-title{
+  font-family:'Rajdhani',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.06em;
+  text-transform:uppercase; color:var(--text-dim); margin-bottom:16px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.panel-title .tag{font-size:10px; color:var(--text-faint); font-weight:500; text-transform:none; letter-spacing:0;}
+
+/* ── Radar ──────────────────────────────────────────────────────── */
+.radar-wrap{display:flex; align-items:center; gap:24px;}
+.radar-legend{display:flex; flex-direction:column; gap:9px; flex:1;}
+.rl-item{display:flex; align-items:center; justify-content:space-between; font-size:12px;}
+.rl-item .dim{color:var(--text-dim); display:flex; align-items:center; gap:8px;}
+.rl-dot{width:8px; height:8px; border-radius:2px; flex-shrink:0;}
+.rl-item .pct{font-weight:600; font-family:'Rajdhani',sans-serif; font-size:15px;}
+
+/* ── Level bars ─────────────────────────────────────────────────── */
+.dim-bars{display:flex; flex-direction:column; gap:14px;}
+.dim-bar-row .dbr-head{display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.05em;}
+.dbr-track{height:16px; border-radius:2px; overflow:hidden; display:flex; background:var(--bg-grid); border:1px solid var(--border);}
+.dbr-seg{height:100%; transition:width .3s ease;}
+.dbr-seg.SAFE{background:var(--safe);}
+.dbr-seg.MARGINAL{background:var(--marginal);}
+.dbr-seg.VULNERABLE{background:var(--vulnerable);}
+.dbr-seg.BROKEN{background:var(--broken);}
+.dbr-seg.UNKNOWN{background:var(--unknown);}
+.dbr-seg.NOT_APPLICABLE{background:var(--na);}
+
+/* ── Sensor / cert lists ────────────────────────────────────────── */
+.mini-list{display:flex; flex-direction:column; gap:8px; max-height:190px; overflow-y:auto;}
+.mini-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 10px; background:var(--panel-2); border:1px solid var(--border);
+  border-radius:3px; font-size:12px;
+}
+.mini-row .name{color:var(--text); display:flex; align-items:center; gap:8px;}
+.mini-row .cnt{color:var(--cyan); font-weight:600; font-family:'Rajdhani',sans-serif;}
+.node-icon{width:6px; height:6px; background:var(--cyan); border-radius:1px; box-shadow:0 0 5px var(--cyan);}
+
+/* ── Table ──────────────────────────────────────────────────────── */
+.table-toolbar{display:flex; gap:10px; margin-bottom:12px; align-items:center; flex-wrap:wrap;}
+.filter-group-label{font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em; margin-right:2px;}
+.search-box{
+  flex:1; min-width:220px; background:var(--panel-2); border:1px solid var(--border);
+  border-radius:3px; padding:9px 12px; color:var(--text); font-family:'IBM Plex Mono';
+  font-size:12px; outline:none;
+}
+.search-box:focus{border-color:var(--cyan);}
+.filter-chip{
+  padding:7px 13px; border-radius:20px; border:1px solid var(--border); background:var(--panel-2);
+  color:var(--text-dim); font-size:11px; cursor:pointer; font-family:'Rajdhani',sans-serif;
+  font-weight:600; letter-spacing:0.04em; text-transform:uppercase; transition:all .15s;
+}
+.filter-chip:hover{border-color:var(--border-bright);}
+.filter-chip.active{color:var(--bg); background:var(--cyan); border-color:var(--cyan);}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+thead th{
+  text-align:left; padding:9px 12px; color:var(--text-faint); font-weight:600;
+  text-transform:uppercase; letter-spacing:0.06em; font-size:10px; border-bottom:1px solid var(--border-bright);
+  cursor:pointer; user-select:none; white-space:nowrap;
+}
+thead th:hover{color:var(--cyan);}
+tbody tr{border-bottom:1px solid var(--border); cursor:pointer; transition:background .1s;}
+tbody tr:hover{background:rgba(79,214,255,0.04);}
+tbody td{padding:10px 12px; color:var(--text-dim); white-space:nowrap;}
+tbody td.mono-strong{color:var(--text);}
+.proto-badge{
+  display:inline-block; padding:2px 8px; border-radius:3px; font-size:10px; font-weight:600;
+  font-family:'Rajdhani',sans-serif; letter-spacing:0.04em;
+}
+.proto-badge.TLS{background:rgba(79,214,255,0.12); color:var(--cyan);}
+.proto-badge.SSH{background:rgba(51,214,138,0.12); color:var(--safe);}
+.proto-badge.SMTP{background:rgba(255,138,61,0.12); color:var(--vulnerable);}
+.proto-badge.IPSEC_IKE{background:rgba(240,185,63,0.12); color:var(--marginal);}
+
+.level-pill{
+  display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:20px;
+  font-size:10px; font-weight:600; font-family:'Rajdhani',sans-serif; letter-spacing:0.05em; text-transform:uppercase;
+}
+.level-pill::before{content:''; width:6px; height:6px; border-radius:50%;}
+.level-pill.SAFE{color:var(--safe); background:rgba(51,214,138,0.1);}
+.level-pill.SAFE::before{background:var(--safe);}
+.level-pill.MARGINAL{color:var(--marginal); background:rgba(240,185,63,0.1);}
+.level-pill.MARGINAL::before{background:var(--marginal);}
+.level-pill.VULNERABLE{color:var(--vulnerable); background:rgba(255,138,61,0.1);}
+.level-pill.VULNERABLE::before{background:var(--vulnerable);}
+.level-pill.BROKEN{color:var(--broken); background:rgba(255,77,94,0.1);}
+.level-pill.BROKEN::before{background:var(--broken);}
+.level-pill.UNKNOWN{color:var(--unknown); background:rgba(91,107,130,0.1);}
+.level-pill.UNKNOWN::before{background:var(--unknown);}
+.level-pill.NOT_APPLICABLE{color:var(--text-faint); background:rgba(55,67,87,0.15);}
+.level-pill.NOT_APPLICABLE::before{background:var(--na);}
+
+.dim-dots{display:flex; gap:3px;}
+.dim-dot{width:8px; height:8px; border-radius:2px;}
+.dim-dot.SAFE{background:var(--safe);}
+.dim-dot.MARGINAL{background:var(--marginal);}
+.dim-dot.VULNERABLE{background:var(--vulnerable);}
+.dim-dot.BROKEN{background:var(--broken);}
+.dim-dot.UNKNOWN{background:var(--unknown-dim); border:1px solid var(--unknown);}
+.dim-dot.NOT_APPLICABLE{background:var(--na); opacity:.4;}
+
+.empty-state{text-align:center; padding:50px 20px; color:var(--text-faint);}
+
+/* ── Detail modal ───────────────────────────────────────────────── */
+.overlay{
+  position:fixed; inset:0; background:rgba(4,6,10,0.72); backdrop-filter:blur(3px);
+  display:none; align-items:flex-start; justify-content:center; z-index:100; padding:60px 20px;
+}
+.overlay.show{display:flex;}
+.modal{
+  background:var(--panel); border:1px solid var(--border-bright); border-radius:6px;
+  max-width:720px; width:100%; max-height:80vh; overflow-y:auto; padding:0;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.modal-head{
+  display:flex; justify-content:space-between; align-items:center; padding:18px 22px;
+  border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--panel);
+}
+.modal-head h3{font-family:'Rajdhani',sans-serif; font-size:16px; color:var(--text); letter-spacing:0.03em;}
+.modal-close{cursor:pointer; color:var(--text-faint); font-size:20px; line-height:1; padding:4px;}
+.modal-close:hover{color:var(--broken);}
+.modal-body{padding:20px 22px;}
+.detail-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; margin-bottom:18px;}
+.detail-field .df-label{font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em;}
+.detail-field .df-value{font-size:12.5px; color:var(--text); margin-top:2px; word-break:break-all;}
+.detail-section-title{
+  font-family:'Rajdhani',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:0.06em;
+  color:var(--text-dim); margin:18px 0 10px; padding-top:14px; border-top:1px solid var(--border);
+}
+.pqc-detail-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px;}
+.pqc-detail-cell{
+  background:var(--panel-2); border:1px solid var(--border); border-radius:4px; padding:10px 8px; text-align:center;
+}
+.pqc-detail-cell .pdc-label{font-size:9px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;}
+.obs-note{
+  font-size:11.5px; color:var(--text-dim); line-height:1.6; background:var(--panel-2);
+  border:1px solid var(--border); border-left:2px solid var(--unknown); border-radius:4px; padding:10px 14px;
+}
+
+/* ── Confronto dichiarato / osservato (Child SA IPsec) ───────────── */
+.decl-obs-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.decl-obs-col{background:var(--panel-2); border:1px solid var(--border); border-radius:4px; padding:10px 12px;}
+.decl-obs-head{
+  font-family:'Rajdhani',sans-serif; font-weight:700; font-size:11px; text-transform:uppercase;
+  letter-spacing:0.04em; color:var(--text); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border);
+}
+.decl-obs-sub{font-family:'IBM Plex Mono',monospace; font-weight:400; text-transform:none; color:var(--text-faint); letter-spacing:0; font-size:10px;}
+.decl-obs-row{display:flex; justify-content:space-between; align-items:baseline; font-size:11.5px; padding:4px 0; gap:8px;}
+.decl-obs-row span{color:var(--text-faint);}
+.decl-obs-row b{color:var(--text); font-weight:600; text-align:right;}
+
+/* ── Upload zone (empty state) ──────────────────────────────────── */
+.upload-zone{
+  border:1.5px dashed var(--border-bright); border-radius:6px; padding:50px 30px;
+  text-align:center; margin-bottom:22px; transition:all .2s;
+}
+.upload-zone.drag{border-color:var(--cyan); background:rgba(79,214,255,0.04);}
+.upload-zone h2{font-family:'Rajdhani',sans-serif; font-size:18px; color:var(--text); margin-bottom:6px;}
+.upload-zone p{font-size:12px; color:var(--text-faint); margin-bottom:16px;}
+
+/* ── Home / landing screen ──────────────────────────────────────── */
+#home-view{
+  min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 24px; position:relative; overflow:hidden;
+}
+.radar-bg{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; z-index:0;}
+.radar-bg .ring{
+  position:absolute; top:50%; left:50%; border-radius:50%; transform:translate(-50%,-50%);
+  border:1px solid rgba(51,214,138,0.09);
+}
+.radar-bg .ring.r1{width:340px; height:340px;}
+.radar-bg .ring.r2{width:560px; height:560px; border-color:rgba(51,214,138,0.065);}
+.radar-bg .ring.r3{width:800px; height:800px; border-color:rgba(51,214,138,0.045);}
+.radar-bg .ring.r4{width:1060px; height:1060px; border-color:rgba(79,214,255,0.035);}
+.radar-bg .crosshair{
+  position:absolute; top:50%; left:50%; width:1060px; height:1px; background:rgba(51,214,138,0.05);
+  transform:translate(-50%,-50%);
+}
+.radar-bg .crosshair.vert{width:1px; height:1060px;}
+.radar-sweep{
+  position:absolute; top:50%; left:50%; width:1060px; height:1060px; transform:translate(-50%,-50%);
+  border-radius:50%; animation:sweep 7s linear infinite;
+  background:conic-gradient(from 0deg, rgba(51,214,138,0.16), transparent 26%, transparent 100%);
+  mask-image:radial-gradient(circle, black 60%, transparent 100%);
+  -webkit-mask-image:radial-gradient(circle, black 60%, transparent 100%);
+}
+@keyframes sweep{ from{transform:translate(-50%,-50%) rotate(0deg);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+.radar-bg .blip{
+  position:absolute; width:4px; height:4px; border-radius:50%; background:var(--safe);
+  box-shadow:0 0 6px var(--safe); animation:blip-fade 4.5s ease-in-out infinite;
+}
+@keyframes blip-fade{0%,100%{opacity:0;} 8%{opacity:1;} 20%{opacity:0;}}
+
+.home-inner{position:relative; z-index:2; max-width:700px; width:100%; text-align:center;}
+.home-mark{
+  width:64px; height:64px; border:2px solid var(--safe); border-radius:6px; margin:0 auto 22px;
+  display:flex; align-items:center; justify-content:center; position:relative;
+  box-shadow:0 0 24px rgba(51,214,138,0.15);
+}
+.home-mark::before{content:''; position:absolute; inset:8px; border:1px solid var(--safe-dim);}
+.home-mark span{font-family:'Rajdhani',sans-serif; font-weight:700; color:var(--safe); font-size:26px;}
+.home-inner h1{
+  font-family:'Rajdhani',sans-serif; font-weight:700; font-size:36px; letter-spacing:0.04em; color:var(--text);
+}
+.home-inner .home-sub{
+  font-size:13px; color:var(--text-dim); letter-spacing:0.05em; margin-top:8px; margin-bottom:22px;
+  text-transform:uppercase;
+}
+
+.dim-preview{display:flex; align-items:center; justify-content:center; gap:9px; margin-bottom:36px; flex-wrap:wrap;}
+.dim-chip{
+  display:flex; align-items:center; gap:6px; padding:5px 12px; border-radius:20px;
+  border:1px solid var(--border); background:rgba(15,21,31,0.6); font-size:10.5px;
+  color:var(--text-dim); font-family:'Rajdhani',sans-serif; font-weight:600; letter-spacing:0.05em;
+}
+.dim-chip .dc-dot{width:6px; height:6px; border-radius:50%;}
+
+.home-drop{
+  border:1.5px dashed var(--border-bright); border-radius:10px; padding:52px 30px;
+  background:rgba(15,21,31,0.55); transition:all .2s ease; cursor:pointer; backdrop-filter:blur(2px);
+}
+.home-drop:hover{border-color:var(--border-bright); background:rgba(19,26,38,0.75); transform:translateY(-1px);}
+.home-drop.drag{border-color:var(--cyan); background:rgba(79,214,255,0.06); box-shadow:0 0 50px rgba(79,214,255,0.1);}
+.home-drop .drop-icon{
+  width:52px; height:52px; margin:0 auto 18px; border:1.5px solid var(--text-faint); border-radius:10px;
+  display:flex; align-items:center; justify-content:center; color:var(--text-faint); transition:all .2s;
+}
+.home-drop:hover .drop-icon{border-color:var(--safe); color:var(--safe);}
+.home-drop.drag .drop-icon{border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 20px rgba(79,214,255,0.2);}
+.home-drop .drop-icon svg{width:24px; height:24px;}
+.home-drop h2{font-family:'Rajdhani',sans-serif; font-size:18px; color:var(--text); margin-bottom:6px; font-weight:600;}
+.home-drop p{font-size:11.5px; color:var(--text-faint);}
+.home-drop .filename-hint{font-size:11px; color:var(--text-faint); margin-top:14px; letter-spacing:0.03em;}
+.home-actions{margin-top:22px; display:flex; align-items:center; justify-content:center; gap:14px;}
+.home-actions .divider{width:1px; height:14px; background:var(--border-bright);}
+.link-btn{
+  background:none; border:none; color:var(--text-faint); font-family:'IBM Plex Mono'; font-size:12px;
+  cursor:pointer; text-decoration:underline; text-underline-offset:3px; text-decoration-color:var(--border-bright);
+  transition:color .15s;
+}
+.link-btn:hover{color:var(--cyan); text-decoration-color:var(--cyan);}
+.home-footnote{
+  margin-top:36px; font-size:10.5px; color:var(--text-faint); letter-spacing:0.03em;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+}
+.home-footnote .fn-dot{width:5px; height:5px; border-radius:50%; background:var(--safe); box-shadow:0 0 5px var(--safe); animation:pulse 2s infinite;}
+
+/* ── Pannello descrittivo: livelli + modelli di minaccia ────────── */
+.legend-panel{
+  margin-top:30px; text-align:left; background:rgba(15,21,31,0.55); border:1px solid var(--border);
+  border-radius:10px; padding:24px 28px; display:grid; grid-template-columns:1fr 1fr; gap:30px;
+  backdrop-filter:blur(2px);
+}
+.legend-col-title{
+  font-family:'Rajdhani',sans-serif; font-weight:700; font-size:12px; text-transform:uppercase;
+  letter-spacing:0.08em; color:var(--text-faint); margin-bottom:14px; padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+.legend-row{display:flex; align-items:baseline; gap:10px; margin-bottom:10px;}
+.legend-row .level-pill{flex-shrink:0; min-width:74px; justify-content:center;}
+.legend-text{font-size:11px; color:var(--text-dim); line-height:1.5;}
+.legend-row-stack{display:flex; flex-direction:column; gap:13px;}
+.legend-term{font-size:11px; color:var(--text-dim); line-height:1.55;}
+.lt-tag{
+  display:inline-block; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:10.5px;
+  letter-spacing:0.06em; padding:2px 8px; border-radius:3px; margin-right:8px; margin-bottom:2px;
+}
+.lt-tag.hndl{background:rgba(79,214,255,0.14); color:var(--cyan);}
+.lt-tag.shor{background:rgba(255,138,61,0.14); color:var(--vulnerable);}
+.lt-tag.grover{background:rgba(240,185,63,0.14); color:var(--marginal);}
+@media (max-width:640px){ .legend-panel{grid-template-columns:1fr;} }
+
+footer{text-align:center; padding:30px 0 10px; font-size:10.5px; color:var(--text-faint); letter-spacing:0.04em;}
+.hidden{display:none !important;}
+#file-input{display:none;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HOME — schermata iniziale ═══════════════ -->
+<div id="home-view">
+  <div class="radar-bg">
+    <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div>
+    <div class="crosshair horiz"></div><div class="crosshair vert"></div>
+    <div class="radar-sweep"></div>
+    <div class="blip" style="top:38%; left:62%; animation-delay:0s;"></div>
+    <div class="blip" style="top:58%; left:34%; animation-delay:1.6s;"></div>
+    <div class="blip" style="top:70%; left:60%; animation-delay:3.1s;"></div>
+  </div>
+
+  <div class="home-inner">
+    <div class="home-mark"><span>C</span></div>
+    <h1 class="hud">CBOM CONSOLE</h1>
+    <div class="home-sub">Crypto Posture Monitor — Kathará Lab</div>
+
+    <div class="dim-preview">
+      <div class="dim-chip"><span class="dc-dot" style="background:#33d68a"></span>KEX</div>
+      <div class="dim-chip"><span class="dc-dot" style="background:#f0b93f"></span>CIPHER</div>
+      <div class="dim-chip"><span class="dc-dot" style="background:#4fd6ff"></span>MAC</div>
+      <div class="dim-chip"><span class="dc-dot" style="background:#33d68a"></span>HOSTKEY</div>
+      <div class="dim-chip"><span class="dc-dot" style="background:#f0b93f"></span>HASH</div>
+    </div>
+
+    <div class="home-drop" id="home-drop">
+      <div class="drop-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3v12"/><path d="M7 9l5-6 5 6"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
+        </svg>
+      </div>
+      <h2 class="hud">Trascina qui il file cbom.json</h2>
+      <p>oppure clicca per selezionarlo dal tuo computer</p>
+      <div class="filename-hint" id="home-filename-hint"></div>
+    </div>
+
+    <div class="home-actions">
+      <button class="link-btn" id="home-demo-btn">Esplora con dati demo</button>
+    </div>
+
+    <div class="legend-panel">
+      <div class="legend-col">
+        <div class="legend-col-title">Livelli di postura</div>
+        <div class="legend-row"><span class="level-pill SAFE">Safe</span><span class="legend-text">nessuna criticità nota, in linea con le raccomandazioni attuali</span></div>
+        <div class="legend-row"><span class="level-pill MARGINAL">Marginal</span><span class="legend-text">adeguato oggi, ma con margine ridotto — da monitorare</span></div>
+        <div class="legend-row"><span class="level-pill VULNERABLE">Vulnerable</span><span class="legend-text">debolezza nota, richiede pianificazione di aggiornamento</span></div>
+        <div class="legend-row"><span class="level-pill BROKEN">Broken</span><span class="legend-text">compromesso o deprecato, intervento prioritario</span></div>
+        <div class="legend-row"><span class="level-pill UNKNOWN">Unknown</span><span class="legend-text">non osservabile in questo campionamento — mai presunto</span></div>
+      </div>
+      <div class="legend-col">
+        <div class="legend-col-title">Modelli di minaccia quantistica</div>
+        <div class="legend-row-stack">
+          <div class="legend-term"><span class="lt-tag hndl">HNDL</span>Harvest Now, Decrypt Later — traffico intercettato e conservato oggi, decifrabile in futuro. Colpisce lo scambio di chiave (KEX).</div>
+          <div class="legend-term"><span class="lt-tag shor">SHOR</span>l'algoritmo che romperebbe RSA/DH/ECC — minaccia diretta a KEX e alle chiavi di identità (HOSTKEY).</div>
+          <div class="legend-term"><span class="lt-tag grover">GROVER</span>dimezza la sicurezza effettiva di cifrari simmetrici e hash — non li rompe, ne riduce il margine.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-footnote"><span class="fn-dot"></span>Elaborazione interamente nel browser — nessun dato lascia questa macchina</div>
+  </div>
+  <input type="file" id="home-file-input" accept=".json" class="hidden">
+</div>
+
+<!-- ═══════════════ APP — dashboard vera e propria ═══════════════ -->
+<div id="app-view" class="hidden">
+
+<header>
+  <div class="brand">
+    <div class="brand-mark"><span>C</span></div>
+    <div class="brand-text">
+      <h1 class="hud">CBOM CONSOLE</h1>
+      <div class="sub">Crypto Posture Monitor — Kathará Lab</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="meta-item">
+      <div class="label">Generato</div>
+      <div class="value" id="meta-generated">—</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Sorgente</div>
+      <div class="value" id="meta-source">—</div>
+    </div>
+    <div class="status-pill"><div class="status-dot"></div><span id="status-text">dati demo</span></div>
+    <button class="btn" id="back-home-btn">&#8592; Cambia file</button>
+  </div>
+</header>
+
+<main>
+
+    <div class="kpi-row" id="kpi-row"></div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Postura crittografica <span class="tag" id="radar-tag">% connessioni SAFE per dimensione</span></div>
+        <div class="radar-wrap">
+          <svg id="radar-svg" width="230" height="230" viewBox="0 0 230 230"></svg>
+          <div class="radar-legend" id="radar-legend"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Distribuzione per dimensione PQC</div>
+        <div class="dim-bars" id="dim-bars"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Sensori attivi <span class="tag" id="sensor-tag"></span></div>
+        <div class="mini-list" id="sensor-list"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Inventario certificati <span class="tag" id="cert-tag"></span></div>
+        <div class="mini-list" id="cert-list"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        Connessioni osservate
+        <span class="tag" id="conn-count-tag"></span>
+      </div>
+      <div class="table-toolbar">
+        <input type="text" class="search-box" id="search-box" placeholder="cerca per IP, host, cifrario, protocollo...">
+      </div>
+      <div class="table-toolbar" id="filter-row-risk">
+        <span class="filter-group-label">Livello:</span>
+        <div class="filter-chip active" data-filter-group="risk" data-filter="ALL">Tutte</div>
+        <div class="filter-chip" data-filter-group="risk" data-filter="SAFE">Safe</div>
+        <div class="filter-chip" data-filter-group="risk" data-filter="MARGINAL">Marginal</div>
+        <div class="filter-chip" data-filter-group="risk" data-filter="VULNERABLE">Vulnerable</div>
+        <div class="filter-chip" data-filter-group="risk" data-filter="BROKEN">Broken</div>
+      </div>
+      <div class="table-toolbar" id="filter-row-proto">
+        <span class="filter-group-label">Protocollo:</span>
+        <div class="filter-chip active" data-filter-group="proto" data-filter="ALL">Tutti</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="protocol">Protocollo</th>
+              <th data-sort="src">Sorgente</th>
+              <th data-sort="dst">Destinazione</th>
+              <th data-sort="crypto">Crittografia</th>
+              <th data-sort="worst">Worst-case</th>
+              <th data-sort="dims">KEX·CIPHER·MAC·HOSTKEY·HASH</th>
+              <th data-sort="sensor">Sensore</th>
+            </tr>
+          </thead>
+          <tbody id="conn-tbody"></tbody>
+        </table>
+        <div class="empty-state hidden" id="empty-state">Nessuna connessione corrisponde ai filtri correnti</div>
+      </div>
+    </div>
+
+</main>
+
+<footer>CBOM Console — dati elaborati interamente nel browser, nessun upload a server esterni</footer>
+
+</div><!-- /app-view -->
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 class="hud" id="modal-title">Dettaglio connessione</h3>
+      <div class="modal-close" id="modal-close">&times;</div>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script id="demo-data" type="application/json">
+{"generated_at": "2026-07-17T09:21:20.305256+00:00", "source_root": "/home/claude/lab_verify2/kathara_crypto_maturity/shared", "summary": {"sensor_ids": ["bastion-eth0", "dmzgw", "internalgw", "mainfw", "mainfw-eth0", "svca", "vpnlocal", "vpnremote"], "connection_count": 68, "certificate_count": 1, "duplicates_removed": 9, "certificates_correlated": 1, "smtp_correlated": 1, "asset_hints_applied": 68}, "connections": [{"protocol": "TLS", "sensor_id": "internalgw", "log_kind": "ssl", "uid": "ChNNP12eGjPN9LtxG5", "ts": 1784209111.234248, "src_ip": "10.2.0.10", "src_port": 41802, "dst_ip": "10.1.0.11", "dst_port": 25, "tls_version": "TLSv13", "cipher": "TLS_AES_256_GCM_SHA384", "curve": "x25519", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "SAFE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "seen_by": ["bastion-eth0", "dmzgw", "internalgw"], "application_protocol": "SMTP", "smtp_context": {"helo": "appserver", "last_reply": "220 2.0.0 Ready to start TLS", "starttls_confirmed_by_smtp_log": true}, "smtp_tls_consistency": "consistent", "asset_hint": {"src_hostname": "appserver", "dst_hostname": "mailsrv", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "bastion-eth0", "log_kind": "ssl", "uid": "CEQKQ7vSabOA2hBBh", "ts": 1784209296.61177, "src_ip": "10.3.0.2", "src_port": 57972, "dst_ip": "10.1.0.10", "dst_port": 443, "tls_version": "TLSv13", "cipher": "TLS_AES_256_GCM_SHA384", "curve": "x25519", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "SAFE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "seen_by": ["bastion-eth0", "dmzgw"], "asset_hint": {"src_hostname": "bastion", "dst_hostname": "apigw", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "internalgw", "log_kind": "ssl", "uid": "C9laV5z48x5o2pTk5", "ts": 1784209330.55153, "src_ip": "10.2.0.10", "src_port": 39866, "dst_ip": "10.1.0.11", "dst_port": 25, "tls_version": "TLSv13", "cipher": "TLS_AES_256_GCM_SHA384", "curve": "x25519", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "SAFE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "seen_by": ["bastion-eth0", "dmzgw", "internalgw"], "asset_hint": {"src_hostname": "appserver", "dst_hostname": "mailsrv", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "internalgw", "log_kind": "ssl", "uid": "ClqGjdCxLOBAxX64l", "ts": 1784209072.583012, "src_ip": "10.2.0.10", "src_port": 45338, "dst_ip": "10.2.0.12", "dst_port": 6514, "tls_version": "TLSv12", "cipher": "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": ["77c98fdceacdafc3c95dab37c4db04e4a4fa461051a9b67df58be799634495f2"], "client_cert_chain_fps": [], "cert_observation_method": "exact_fingerprint_match", "has_pfs": null, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "SAFE", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "seen_by": ["internalgw"], "certificate": {"fingerprint": "77c98fdceacdafc3c95dab37c4db04e4a4fa461051a9b67df58be799634495f2", "subject": "CN=logserver.katharalab.local,O=KatharaLab,C=IT", "issuer": "CN=KatharaLab Root CA,O=KatharaLab,C=IT", "key_type": "ecdsa", "key_length": 256, "curve": "prime256v1", "sig_alg": "ecdsa-with-SHA256", "not_valid_after": 1855489002.0, "observed_by": ["internalgw"]}, "asset_hint": {"src_hostname": "appserver", "dst_hostname": "logserver", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CoiIRA1Q3kbseJslZc", "ts": 1784209086.886245, "src_ip": "10.4.0.10", "src_port": 48928, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CqWaP03H1ckW1jFqMd", "ts": 1784209086.886551, "src_ip": "10.4.0.11", "src_port": 52234, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CQV3Oh4AL5i7rckWtg", "ts": 1784209101.901444, "src_ip": "10.4.0.10", "src_port": 42724, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CVxLIl2JvVCRKqtF4b", "ts": 1784209101.902027, "src_ip": "10.4.0.11", "src_port": 40656, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "C2R61x3OrkbFNSk7og", "ts": 1784209116.922845, "src_ip": "10.4.0.11", "src_port": 33408, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "Ckk27v9kX3K7IFw5i", "ts": 1784209116.923378, "src_ip": "10.4.0.10", "src_port": 36560, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CGAgxA1I9NSeoTKDY1", "ts": 1784209131.944419, "src_ip": "10.4.0.11", "src_port": 39224, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CMOde32tJWghLTNGe3", "ts": 1784209131.944956, "src_ip": "10.4.0.10", "src_port": 54734, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "Co5f1r2Ko52AIhEZM5", "ts": 1784209146.957772, "src_ip": "10.4.0.11", "src_port": 51496, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "Cugk5a20mrujgoESYf", "ts": 1784209146.959172, "src_ip": "10.4.0.10", "src_port": 39650, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CzKvxm3mLNbwUKP9Af", "ts": 1784209161.970051, "src_ip": "10.4.0.11", "src_port": 44972, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CjLkET9AawpcMO4z8", "ts": 1784209161.972115, "src_ip": "10.4.0.10", "src_port": 34958, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CiHTS037q417tKuFRc", "ts": 1784209176.990403, "src_ip": "10.4.0.11", "src_port": 50106, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CK2Lub30yd86YKQjQe", "ts": 1784209176.991216, "src_ip": "10.4.0.10", "src_port": 58354, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CXYxWx4o3bhHLJrKvj", "ts": 1784209192.004779, "src_ip": "10.4.0.10", "src_port": 46098, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CnXiJK3P7XQXmbKrsl", "ts": 1784209192.011084, "src_ip": "10.4.0.11", "src_port": 36290, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CHHm3i26Vdcc71VQkf", "ts": 1784209207.016428, "src_ip": "10.4.0.10", "src_port": 36824, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "Cxc4vK2J9DR5SbVqd7", "ts": 1784209207.02305, "src_ip": "10.4.0.11", "src_port": 39782, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "Cd7ifcqcbkiNhKNR", "ts": 1784209222.027936, "src_ip": "10.4.0.10", "src_port": 39236, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CslSSp4kvZ9wGeMcb3", "ts": 1784209222.035261, "src_ip": "10.4.0.11", "src_port": 60054, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "C82xpx3QasQHJTKkY", "ts": 1784209237.039218, "src_ip": "10.4.0.10", "src_port": 35620, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CTLeu9Es6WAy5OFC7", "ts": 1784209237.047746, "src_ip": "10.4.0.11", "src_port": 55232, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "Ck5bd01YK2EGhC38wc", "ts": 1784209252.050602, "src_ip": "10.4.0.10", "src_port": 46026, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CKaePg5ilht8feB1e", "ts": 1784209252.059352, "src_ip": "10.4.0.11", "src_port": 41126, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CYnSZ42OvOQY9qNdR", "ts": 1784209267.061534, "src_ip": "10.4.0.10", "src_port": 47364, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "C0rs181Bjs2FyQEAnd", "ts": 1784209267.070642, "src_ip": "10.4.0.11", "src_port": 36070, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CRSOH221r3stBIOfue", "ts": 1784209282.080386, "src_ip": "10.4.0.10", "src_port": 53060, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CePJf82ncu4i5mnsxi", "ts": 1784209282.082075, "src_ip": "10.4.0.11", "src_port": 56010, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CZ3mwW2r68CnSxOS09", "ts": 1784209297.092563, "src_ip": "10.4.0.10", "src_port": 40608, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "COCKOg3OGD3nx5m2B5", "ts": 1784209297.094233, "src_ip": "10.4.0.11", "src_port": 38582, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CnemEF33ERUzgfyhc9", "ts": 1784209312.105058, "src_ip": "10.4.0.10", "src_port": 53298, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CniIoo1CAvhOojr89l", "ts": 1784209312.106692, "src_ip": "10.4.0.11", "src_port": 60600, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CzrRs420ALDSW15Hf1", "ts": 1784209327.117501, "src_ip": "10.4.0.10", "src_port": 54784, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CEeDMt3XelpqOY6s0j", "ts": 1784209327.119201, "src_ip": "10.4.0.11", "src_port": 46856, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "Cib2lp4GhBuuRC4wE6", "ts": 1784209342.128683, "src_ip": "10.4.0.10", "src_port": 59262, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CrDhO333nkAajm0XWf", "ts": 1784209342.132597, "src_ip": "10.4.0.11", "src_port": 43892, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CpfkUx3SfV9so9nGud", "ts": 1784209357.140417, "src_ip": "10.4.0.10", "src_port": 58194, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "C9xRXG2zFckBlRsBw4", "ts": 1784209357.145135, "src_ip": "10.4.0.11", "src_port": 47084, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CgBVOhogopQk8orkl", "ts": 1784209372.151775, "src_ip": "10.4.0.10", "src_port": 55308, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CH4dj94sU3xeayMkVe", "ts": 1784209372.156634, "src_ip": "10.4.0.11", "src_port": 33036, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "C9rKUr2AP8OL1MYeX8", "ts": 1784209387.164397, "src_ip": "10.4.0.10", "src_port": 32802, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CeT8zr2hjtbMADgIaf", "ts": 1784209387.167056, "src_ip": "10.4.0.11", "src_port": 43484, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CGpXhd1QlJEDo9SKbd", "ts": 1784209402.176145, "src_ip": "10.4.0.10", "src_port": 60802, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CLvWjs3YgIhJQE5dxf", "ts": 1784209402.180082, "src_ip": "10.4.0.11", "src_port": 56616, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "Cmc7pv3ga9Wk0m2Dbg", "ts": 1784209417.188477, "src_ip": "10.4.0.10", "src_port": 47226, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "Cy3ZBMgwi2NmnVxzg", "ts": 1784209417.191426, "src_ip": "10.4.0.11", "src_port": 52580, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CXWNxm3fffQxTDLva9", "ts": 1784209432.198575, "src_ip": "10.4.0.10", "src_port": 37234, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CaH0mi17dEDCrh6qxi", "ts": 1784209432.202488, "src_ip": "10.4.0.11", "src_port": 36340, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CqRaTQp0zkPvag0j2", "ts": 1784209447.208298, "src_ip": "10.4.0.10", "src_port": 49820, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CCOcxLTm2RYWPaLBl", "ts": 1784209447.213806, "src_ip": "10.4.0.11", "src_port": 47440, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CkPfAjtSTG2tPqPJ5", "ts": 1784209462.219716, "src_ip": "10.4.0.10", "src_port": 43900, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CnKyZ82SZUcTPSldue", "ts": 1784209462.224662, "src_ip": "10.4.0.11", "src_port": 39008, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CictTW15B41QpQvzd", "ts": 1784209477.230158, "src_ip": "10.4.0.10", "src_port": 52306, "dst_ip": "10.4.0.11", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svca", "dst_hostname": "svcb", "_source": "external_static_inventory"}}, {"protocol": "TLS", "sensor_id": "svca", "log_kind": "ssl", "uid": "CxLvtbxmPddd5nV0e", "ts": 1784209477.238006, "src_ip": "10.4.0.11", "src_port": 32934, "dst_ip": "10.4.0.10", "dst_port": 50051, "tls_version": "TLSv13", "cipher": "TLS_AES_128_GCM_SHA256", "curve": "secp256r1", "resumed": false, "established": true, "cert_chain_fps": [], "client_cert_chain_fps": [], "cert_observation_method": "not_observable_tls13_encrypted_certificate", "has_pfs": true, "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}, "seen_by": ["svca"], "asset_hint": {"src_hostname": "svcb", "dst_hostname": "svca", "_source": "external_static_inventory"}}, {"protocol": "SSH", "sensor_id": "mainfw-eth0", "log_kind": "ssh", "uid": "CZu63q4LTzqbzMklS", "ts": 1784209273.238117, "src_ip": "10.9.2.1", "src_port": 36546, "dst_ip": "10.3.0.2", "dst_port": 22, "ssh_version": null, "client_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10", "server_banner": null, "kex_alg": null, "host_key_alg": null, "host_key_fingerprint": null, "cipher_alg": null, "mac_alg": null, "compression_alg": null, "auth_success": null, "auth_attempts": 0, "pqc_assessment": {"KEX": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}, "MAC": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}}, "seen_by": ["bastion-eth0", "mainfw-eth0"], "asset_hint": {"src_hostname": "clientext (road warrior, pool admin — IP virtuale)", "dst_hostname": "bastion", "_source": "external_static_inventory"}}, {"protocol": "SSH", "sensor_id": "internalgw", "log_kind": "ssh", "uid": "C5Kw1c4M8FqNWdZmL3", "ts": 1784209346.785128, "src_ip": "10.2.0.10", "src_port": 55584, "dst_ip": "10.1.0.12", "dst_port": 22, "ssh_version": 2, "client_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10", "server_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10", "kex_alg": "curve25519-sha256", "host_key_alg": "ssh-ed25519", "host_key_fingerprint": "SHA256:MckGoL+RoF6DWButlyGXvtHtYGr/zjH/", "cipher_alg": "chacha20-poly1305@openssh.com", "mac_alg": "hmac-sha2-256-etm@openssh.com", "compression_alg": "none", "auth_success": false, "auth_attempts": 1, "pqc_assessment": {"KEX": {"level": "SAFE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "SAFE", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}}, "seen_by": ["bastion-eth0", "dmzgw", "internalgw"], "asset_hint": {"src_hostname": "appserver", "dst_hostname": "ftpsrv", "_source": "external_static_inventory"}}, {"protocol": "SSH", "sensor_id": "mainfw-eth0", "log_kind": "ssh", "uid": "CV3dV34aMtztISy0i5", "ts": 1784209379.171839, "src_ip": "10.9.2.1", "src_port": 45332, "dst_ip": "10.1.0.12", "dst_port": 22, "ssh_version": null, "client_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10", "server_banner": null, "kex_alg": null, "host_key_alg": null, "host_key_fingerprint": null, "cipher_alg": null, "mac_alg": null, "compression_alg": null, "auth_success": null, "auth_attempts": 0, "pqc_assessment": {"KEX": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}, "MAC": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "UNKNOWN", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}}, "seen_by": ["dmzgw", "mainfw-eth0"], "asset_hint": {"src_hostname": "clientext (road warrior, pool admin — IP virtuale)", "dst_hostname": "ftpsrv", "_source": "external_static_inventory"}}, {"protocol": "SSH", "sensor_id": "internalgw", "log_kind": "ssh", "uid": "CmJtqa2w9tk2VMSwH", "ts": 1784209339.084494, "src_ip": "10.2.0.10", "src_port": 47884, "dst_ip": "10.2.0.11", "dst_port": 22, "ssh_version": 2, "client_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10", "server_banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10", "kex_alg": "curve25519-sha256", "host_key_alg": "ssh-ed25519", "host_key_fingerprint": "SHA256:MckGoL+RoF6DWButlyGXvtHtYGr/zjH/", "cipher_alg": "chacha20-poly1305@openssh.com", "mac_alg": "hmac-sha2-256-etm@openssh.com", "compression_alg": "none", "auth_success": true, "auth_attempts": 1, "pqc_assessment": {"KEX": {"level": "SAFE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "SAFE", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "UNKNOWN", "quantum_paradigm": "GROVER"}}, "seen_by": ["internalgw"], "asset_hint": {"src_hostname": "appserver", "dst_hostname": "backupsrv", "_source": "external_static_inventory"}}, {"protocol": "IPSEC_IKE", "sensor_id": "mainfw", "conn_name": "rw-admin", "ike_uid": "2", "state": "ESTABLISHED", "local_id": "mainfw.katharalab.local", "local_addr": "10.0.0.1", "remote_id": "bob@admin.katharalab.local", "remote_addr": "10.0.0.50", "ike_enc": "AES_GCM_16", "ike_enc_bits": 256, "ike_prf": "HMAC_SHA2_384", "ike_group": "ECP_384", "child_sas": [{"protocol": "IPSEC_ESP", "child_name": "rw-admin-child", "child_uid": "2", "state": "INSTALLED", "esp_enc": "AES_GCM_16", "esp_enc_bits": 256, "esp_group": null, "has_pfs": false, "pqc_assessment": {"KEX": {"level": "NOT_APPLICABLE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}}, "declared_esp_proposal": "aes256gcm16-ecp384", "declared_dh_group": "ECP_384", "declared_pfs_capable": true}], "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "asset_hint": {"local_hostname": "mainfw", "remote_hostname": "clientext", "_source": "external_static_inventory"}, "auth_method": {"local": "psk", "remote": "psk"}, "ike_rekey_time_seconds": 14400, "child_rekey_time_seconds": 3600, "declared_ike_proposal": "aes256gcm16-prfsha384-ecp384", "data_plane_pfs_observed": false}, {"protocol": "IPSEC_IKE", "sensor_id": "mainfw", "conn_name": "rw-employee", "ike_uid": "1", "state": "ESTABLISHED", "local_id": "mainfw.katharalab.local", "local_addr": "10.0.0.1", "remote_id": "alice@employee.katharalab.local", "remote_addr": "10.0.0.50", "ike_enc": "AES_GCM_16", "ike_enc_bits": 256, "ike_prf": "HMAC_SHA2_384", "ike_group": "ECP_384", "child_sas": [{"protocol": "IPSEC_ESP", "child_name": "rw-employee-child", "child_uid": "1", "state": "INSTALLED", "esp_enc": "AES_GCM_16", "esp_enc_bits": 256, "esp_group": null, "has_pfs": false, "pqc_assessment": {"KEX": {"level": "NOT_APPLICABLE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}}, "declared_esp_proposal": "aes256gcm16-ecp384", "declared_dh_group": "ECP_384", "declared_pfs_capable": true}], "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "asset_hint": {"local_hostname": "mainfw", "remote_hostname": "clientext", "_source": "external_static_inventory"}, "auth_method": {"local": "psk", "remote": "psk"}, "ike_rekey_time_seconds": 14400, "child_rekey_time_seconds": 3600, "declared_ike_proposal": "aes256gcm16-prfsha384-ecp384", "data_plane_pfs_observed": false}, {"protocol": "IPSEC_IKE", "sensor_id": "vpnlocal", "conn_name": "site-to-site", "ike_uid": "4", "state": "ESTABLISHED", "local_id": "vpnlocal.katharalab.local", "local_addr": "10.5.0.1", "remote_id": "vpnremote.katharalab.local", "remote_addr": "10.5.0.2", "ike_enc": "AES_GCM_16", "ike_enc_bits": 256, "ike_prf": "HMAC_SHA2_384", "ike_group": "ECP_384", "child_sas": [{"protocol": "IPSEC_ESP", "child_name": "site-to-site", "child_uid": "3", "state": "INSTALLED", "esp_enc": "AES_GCM_16", "esp_enc_bits": 256, "esp_group": null, "has_pfs": false, "pqc_assessment": {"KEX": {"level": "NOT_APPLICABLE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}}, "declared_esp_proposal": "aes256gcm16-ecp256", "declared_dh_group": "ECP_256", "declared_pfs_capable": true}], "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "asset_hint": {"local_hostname": "vpnlocal", "remote_hostname": "vpnremote", "_source": "external_static_inventory"}, "auth_method": {"local": "pubkey", "remote": "pubkey"}, "ike_rekey_time_seconds": 14400, "child_rekey_time_seconds": 1200, "declared_ike_proposal": "aes256gcm16-prfsha384-ecp384", "data_plane_pfs_observed": false}, {"protocol": "IPSEC_IKE", "sensor_id": "vpnlocal", "conn_name": "site-to-site", "ike_uid": "3", "state": "ESTABLISHED", "local_id": "vpnlocal.katharalab.local", "local_addr": "10.5.0.1", "remote_id": "vpnremote.katharalab.local", "remote_addr": "10.5.0.2", "ike_enc": "AES_GCM_16", "ike_enc_bits": 256, "ike_prf": "HMAC_SHA2_384", "ike_group": "ECP_384", "child_sas": [{"protocol": "IPSEC_ESP", "child_name": "site-to-site", "child_uid": "1", "state": "INSTALLED", "esp_enc": "AES_GCM_16", "esp_enc_bits": 256, "esp_group": null, "has_pfs": false, "pqc_assessment": {"KEX": {"level": "NOT_APPLICABLE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}}, "declared_esp_proposal": "aes256gcm16-ecp256", "declared_dh_group": "ECP_256", "declared_pfs_capable": true}], "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "asset_hint": {"local_hostname": "vpnlocal", "remote_hostname": "vpnremote", "_source": "external_static_inventory"}, "auth_method": {"local": "pubkey", "remote": "pubkey"}, "ike_rekey_time_seconds": 14400, "child_rekey_time_seconds": 1200, "declared_ike_proposal": "aes256gcm16-prfsha384-ecp384", "data_plane_pfs_observed": false}, {"protocol": "IPSEC_IKE", "sensor_id": "vpnremote", "conn_name": "site-to-site", "ike_uid": "4", "state": "ESTABLISHED", "local_id": "vpnremote.katharalab.local", "local_addr": "10.5.0.2", "remote_id": "vpnlocal.katharalab.local", "remote_addr": "10.5.0.1", "ike_enc": "AES_GCM_16", "ike_enc_bits": 256, "ike_prf": "HMAC_SHA2_384", "ike_group": "ECP_384", "child_sas": [{"protocol": "IPSEC_ESP", "child_name": "site-to-site", "child_uid": "3", "state": "INSTALLED", "esp_enc": "AES_GCM_16", "esp_enc_bits": 256, "esp_group": null, "has_pfs": false, "pqc_assessment": {"KEX": {"level": "NOT_APPLICABLE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}}, "declared_esp_proposal": "aes256gcm16-ecp256", "declared_dh_group": "ECP_256", "declared_pfs_capable": true}], "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "asset_hint": {"local_hostname": "vpnremote", "remote_hostname": "vpnlocal", "_source": "external_static_inventory"}, "auth_method": {"local": "pubkey", "remote": "pubkey"}, "ike_rekey_time_seconds": 14400, "child_rekey_time_seconds": 1200, "declared_ike_proposal": "aes256gcm16-prfsha384-ecp384", "data_plane_pfs_observed": false}, {"protocol": "IPSEC_IKE", "sensor_id": "vpnremote", "conn_name": "site-to-site", "ike_uid": "3", "state": "ESTABLISHED", "local_id": "vpnremote.katharalab.local", "local_addr": "10.5.0.2", "remote_id": "vpnlocal.katharalab.local", "remote_addr": "10.5.0.1", "ike_enc": "AES_GCM_16", "ike_enc_bits": 256, "ike_prf": "HMAC_SHA2_384", "ike_group": "ECP_384", "child_sas": [{"protocol": "IPSEC_ESP", "child_name": "site-to-site", "child_uid": "2", "state": "INSTALLED", "esp_enc": "AES_GCM_16", "esp_enc_bits": 256, "esp_group": null, "has_pfs": false, "pqc_assessment": {"KEX": {"level": "NOT_APPLICABLE", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}}, "declared_esp_proposal": "aes256gcm16-ecp256", "declared_dh_group": "ECP_256", "declared_pfs_capable": true}], "pqc_assessment": {"KEX": {"level": "MARGINAL", "quantum_paradigm": "HNDL/SHOR"}, "CIPHER": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "MAC": {"level": "SAFE", "quantum_paradigm": "GROVER"}, "HOSTKEY": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HASH": {"level": "SAFE", "quantum_paradigm": "GROVER"}}, "asset_hint": {"local_hostname": "vpnremote", "remote_hostname": "vpnlocal", "_source": "external_static_inventory"}, "auth_method": {"local": "pubkey", "remote": "pubkey"}, "ike_rekey_time_seconds": 14400, "child_rekey_time_seconds": 1200, "declared_ike_proposal": "aes256gcm16-prfsha384-ecp384", "data_plane_pfs_observed": false}], "certificates": [{"fingerprint": "77c98fdceacdafc3c95dab37c4db04e4a4fa461051a9b67df58be799634495f2", "subject": "CN=logserver.katharalab.local,O=KatharaLab,C=IT", "issuer": "CN=KatharaLab Root CA,O=KatharaLab,C=IT", "not_valid_before": 1784209002.0, "not_valid_after": 1855489002.0, "key_alg": "id-ecPublicKey", "sig_alg": "ecdsa-with-SHA256", "key_type": "ecdsa", "key_length": 256, "curve": "prime256v1", "san_dns": ["logserver.katharalab.local"], "san_ip": ["10.2.0.12"], "host_cert": true, "client_cert": false, "observed_by": ["internalgw"], "pqc_assessment": {"KEX": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "CIPHER": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "MAC": {"level": "NOT_APPLICABLE", "quantum_paradigm": "N/A"}, "HOSTKEY": {"level": "SAFE", "quantum_paradigm": "HNDL/SHOR"}, "HASH": {"level": "MARGINAL", "quantum_paradigm": "GROVER"}}}]}
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// CBOM Console — logica applicativa
+// ═══════════════════════════════════════════════════════════════════
+
+const LEVEL_COLORS = {
+  SAFE: '#33d68a', MARGINAL: '#f0b93f', VULNERABLE: '#ff8a3d',
+  BROKEN: '#ff4d5e', UNKNOWN: '#5b6b82', NOT_APPLICABLE: '#374357'
+};
+const LEVEL_ORDER = ['BROKEN', 'VULNERABLE', 'MARGINAL', 'SAFE', 'UNKNOWN', 'NOT_APPLICABLE'];
+const LEVEL_RANK = { BROKEN: 0, VULNERABLE: 1, MARGINAL: 2, UNKNOWN: 3, NOT_APPLICABLE: 4, SAFE: 5 };
+const DIMENSIONS = ['KEX', 'CIPHER', 'MAC', 'HOSTKEY', 'HASH'];
+
+let STATE = { cbom: null, riskFilter: 'ALL', protoFilter: 'ALL', search: '', sortKey: null, sortDir: 1 };
+
+function worstLevel(pqc) {
+  if (!pqc) return 'UNKNOWN';
+  let worst = 'SAFE';
+  for (const dim of DIMENSIONS) {
+    const lvl = (pqc[dim] || {}).level || 'UNKNOWN';
+    if (LEVEL_RANK[lvl] < LEVEL_RANK[worst]) worst = lvl;
+  }
+  return worst;
+}
+
+function connLabel(rec) {
+  const hint = rec.asset_hint || {};
+  if (rec.protocol === 'IPSEC_IKE') {
+    const src = rec.local_addr || rec.local_id || '—';
+    const dst = rec.remote_addr || rec.remote_id || '—';
+    return {
+      src: hint.local_hostname ? `${src} (${hint.local_hostname})` : src,
+      dst: hint.remote_hostname ? `${dst} (${hint.remote_hostname})` : dst,
+    };
+  }
+  const src = `${rec.src_ip || '—'}:${rec.src_port ?? ''}`;
+  const dst = `${rec.dst_ip || '—'}:${rec.dst_port ?? ''}`;
+  return {
+    src: hint.src_hostname ? `${src} (${hint.src_hostname})` : src,
+    dst: hint.dst_hostname ? `${dst} (${hint.dst_hostname})` : dst,
+  };
+}
+
+function protoLabel(rec) {
+  // application_protocol (es. SMTP, riconosciuto via correlazione con
+  // smtp.log) è più specifico del solo protocollo di trasporto TLS/SSH —
+  // mostralo quando disponibile, senza nascondere il dato di base.
+  return rec.application_protocol || rec.protocol.replace('IPSEC_', '');
+}
+
+function cryptoSummary(rec) {
+  if (rec.protocol === 'TLS') return `${rec.tls_version || '?'} · ${rec.cipher || '?'}`;
+  if (rec.protocol === 'SSH') return `${rec.kex_alg || '?'} · ${rec.cipher_alg || '?'}`;
+  if (rec.protocol === 'IPSEC_IKE') return `${rec.ike_enc || '?'}-${rec.ike_enc_bits || ''} · ${rec.ike_group || '?'}`;
+  return '—';
+}
+
+function fmtTs(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts * 1000);
+  return d.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+}
+
+// ─── Caricamento dati ──────────────────────────────────────────────
+function loadDemoData() {
+  const raw = document.getElementById('demo-data').textContent;
+  return JSON.parse(raw);
+}
+
+function ingest(cbom, sourceLabel) {
+  STATE.cbom = cbom;
+  STATE.riskFilter = 'ALL'; STATE.protoFilter = 'ALL'; STATE.search = ''; STATE.sortKey = null;
+  document.getElementById('search-box').value = '';
+  document.querySelectorAll('.filter-chip[data-filter-group="risk"]').forEach(c => c.classList.remove('active'));
+  document.querySelector('.filter-chip[data-filter-group="risk"][data-filter="ALL"]').classList.add('active');
+  document.getElementById('meta-generated').textContent = cbom.generated_at ? fmtTs_iso(cbom.generated_at) : '—';
+  document.getElementById('meta-source').textContent = sourceLabel;
+  document.getElementById('status-text').textContent = sourceLabel === 'dati demo' ? 'dati demo' : 'dati caricati';
+  document.getElementById('home-view').classList.add('hidden');
+  document.getElementById('app-view').classList.remove('hidden');
+  render();
+}
+
+function fmtTs_iso(iso) {
+  try { return iso.replace('T', ' ').substring(0, 19) + ' UTC'; } catch(e) { return iso; }
+}
+
+// ─── Rendering: KPI ────────────────────────────────────────────────
+function renderKPIs() {
+  const c = STATE.cbom;
+  const conns = c.connections || [];
+  const worstCounts = { BROKEN: 0, VULNERABLE: 0, MARGINAL: 0, SAFE: 0 };
+  conns.forEach(r => { const w = worstLevel(r.pqc_assessment); if (worstCounts[w] !== undefined) worstCounts[w]++; });
+
+  const kpis = [
+    { label: 'Connessioni', value: c.summary?.connection_count ?? conns.length, sub: `${c.summary?.sensor_ids?.length ?? 0} sensori`, accent: 'var(--cyan)' },
+    { label: 'Certificati', value: c.summary?.certificate_count ?? (c.certificates || []).length, sub: `${c.summary?.certificates_correlated ?? 0} correlati`, accent: 'var(--cyan)' },
+    { label: 'Doppioni rimossi', value: c.summary?.duplicates_removed ?? 0, sub: 'in fase di dedup', accent: 'var(--text-dim)' },
+    { label: 'Safe (worst-case)', value: worstCounts.SAFE, sub: 'nessun rilievo', accent: 'var(--safe)' },
+    { label: 'Marginal', value: worstCounts.MARGINAL, sub: 'da monitorare', accent: 'var(--marginal)' },
+    { label: 'Vulnerable · Broken', value: worstCounts.VULNERABLE + worstCounts.BROKEN, sub: 'richiede intervento', accent: (worstCounts.VULNERABLE + worstCounts.BROKEN) > 0 ? 'var(--broken)' : 'var(--text-dim)' },
+  ];
+
+  document.getElementById('kpi-row').innerHTML = kpis.map(k => `
+    <div class="kpi" style="--kpi-accent:${k.accent}">
+      <div class="k-label">${k.label}</div>
+      <div class="k-value">${k.value}</div>
+      <div class="k-sub">${k.sub}</div>
+    </div>`).join('');
+}
+
+// ─── Rendering: radar pentagono ────────────────────────────────────
+function renderRadar() {
+  const conns = STATE.cbom.connections || [];
+  const cx = 115, cy = 108, R = 82;
+  const angleFor = i => (Math.PI * 2 * i / 5) - Math.PI / 2;
+
+  const pct = {};
+  DIMENSIONS.forEach(dim => {
+    const applicable = conns.filter(r => (r.pqc_assessment?.[dim]?.level) && r.pqc_assessment[dim].level !== 'NOT_APPLICABLE');
+    const safe = applicable.filter(r => r.pqc_assessment[dim].level === 'SAFE');
+    pct[dim] = applicable.length ? safe.length / applicable.length : 0;
+  });
+
+  let gridPolys = '';
+  for (let ring = 1; ring <= 4; ring++) {
+    const r = R * ring / 4;
+    const pts = DIMENSIONS.map((_, i) => {
+      const a = angleFor(i);
+      return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+    }).join(' ');
+    gridPolys += `<polygon points="${pts}" fill="none" stroke="#1d2735" stroke-width="1"/>`;
+  }
+  const axisLines = DIMENSIONS.map((_, i) => {
+    const a = angleFor(i);
+    return `<line x1="${cx}" y1="${cy}" x2="${cx + R * Math.cos(a)}" y2="${cy + R * Math.sin(a)}" stroke="#1d2735" stroke-width="1"/>`;
+  }).join('');
+
+  const dataPts = DIMENSIONS.map((dim, i) => {
+    const a = angleFor(i);
+    const r = R * pct[dim];
+    return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
+  }).join(' ');
+
+  const labels = DIMENSIONS.map((dim, i) => {
+    const a = angleFor(i);
+    const lx = cx + (R + 20) * Math.cos(a);
+    const ly = cy + (R + 20) * Math.sin(a);
+    return `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-family="Rajdhani" font-weight="600" font-size="11" fill="#7688a0">${dim}</text>`;
+  }).join('');
+
+  const dots = DIMENSIONS.map((dim, i) => {
+    const a = angleFor(i);
+    const r = R * pct[dim];
+    return `<circle cx="${cx + r * Math.cos(a)}" cy="${cy + r * Math.sin(a)}" r="3.5" fill="#33d68a"/>`;
+  }).join('');
+
+  document.getElementById('radar-svg').innerHTML = `
+    ${gridPolys}${axisLines}
+    <polygon points="${dataPts}" fill="rgba(51,214,138,0.14)" stroke="#33d68a" stroke-width="2"/>
+    ${dots}${labels}`;
+
+  document.getElementById('radar-legend').innerHTML = DIMENSIONS.map(dim => `
+    <div class="rl-item">
+      <span class="dim"><span class="rl-dot" style="background:${pct[dim] > 0.66 ? 'var(--safe)' : pct[dim] > 0.33 ? 'var(--marginal)' : 'var(--broken)'}"></span>${dim}</span>
+      <span class="pct" style="color:${pct[dim] > 0.66 ? 'var(--safe)' : pct[dim] > 0.33 ? 'var(--marginal)' : 'var(--broken)'}">${Math.round(pct[dim]*100)}%</span>
+    </div>`).join('');
+}
+
+// ─── Rendering: barre distribuzione per dimensione ─────────────────
+function renderDimBars() {
+  const conns = STATE.cbom.connections || [];
+  const html = DIMENSIONS.map(dim => {
+    const counts = {};
+    LEVEL_ORDER.forEach(l => counts[l] = 0);
+    let total = 0;
+    conns.forEach(r => {
+      const lvl = r.pqc_assessment?.[dim]?.level;
+      if (lvl) { counts[lvl] = (counts[lvl] || 0) + 1; total++; }
+    });
+    const segs = LEVEL_ORDER.map(l => {
+      const w = total ? (counts[l] / total * 100) : 0;
+      return w > 0 ? `<div class="dbr-seg ${l}" style="width:${w}%" title="${l}: ${counts[l]}"></div>` : '';
+    }).join('');
+    return `<div class="dim-bar-row">
+      <div class="dbr-head"><span>${dim}</span><span>${total} osservazioni</span></div>
+      <div class="dbr-track">${segs}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('dim-bars').innerHTML = html;
+}
+
+// ─── Rendering: sensori e certificati ──────────────────────────────
+function renderSensors() {
+  const conns = STATE.cbom.connections || [];
+  const counts = {};
+  conns.forEach(r => {
+    const seen = r.seen_by || [r.sensor_id];
+    seen.forEach(s => { if (s) counts[s] = (counts[s] || 0) + 1; });
+  });
+  const sensorIds = STATE.cbom.summary?.sensor_ids || Object.keys(counts);
+  document.getElementById('sensor-tag').textContent = `${sensorIds.length} totali`;
+  document.getElementById('sensor-list').innerHTML = sensorIds.map(s => `
+    <div class="mini-row">
+      <span class="name"><span class="node-icon"></span>${s}</span>
+      <span class="cnt">${counts[s] || 0}</span>
+    </div>`).join('') || '<div class="empty-state">Nessun sensore</div>';
+}
+
+function renderCerts() {
+  const certs = STATE.cbom.certificates || [];
+  document.getElementById('cert-tag').textContent = `${certs.length} totali`;
+  document.getElementById('cert-list').innerHTML = certs.map(cert => {
+    const lvl = cert.pqc_assessment?.HOSTKEY?.level || 'UNKNOWN';
+    return `<div class="mini-row">
+      <span class="name">${(cert.subject || '').split(',')[0].replace('CN=','') || cert.fingerprint?.substring(0,12)}</span>
+      <span class="level-pill ${lvl}">${lvl}</span>
+    </div>`;
+  }).join('') || '<div class="empty-state">Nessun certificato osservato</div>';
+}
+
+function renderProtoFilters() {
+  const conns = STATE.cbom.connections || [];
+  const counts = {};
+  conns.forEach(r => {
+    const p = protoLabel(r);
+    counts[p] = (counts[p] || 0) + 1;
+  });
+  const protos = Object.keys(counts).sort();
+  const row = document.getElementById('filter-row-proto');
+  row.innerHTML = `<span class="filter-group-label">Protocollo:</span>` +
+    `<div class="filter-chip active" data-filter-group="proto" data-filter="ALL">Tutti (${conns.length})</div>` +
+    protos.map(p => `<div class="filter-chip" data-filter-group="proto" data-filter="${p}">${p} (${counts[p]})</div>`).join('');
+
+  row.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      row.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      STATE.protoFilter = chip.dataset.filter;
+      renderTable();
+    });
+  });
+}
+
+// ─── Rendering: tabella connessioni ─────────────────────────────────
+function filteredConnections() {
+  let conns = (STATE.cbom.connections || []).slice();
+  if (STATE.riskFilter !== 'ALL') {
+    conns = conns.filter(r => worstLevel(r.pqc_assessment) === STATE.riskFilter);
+  }
+  if (STATE.protoFilter !== 'ALL') {
+    conns = conns.filter(r => protoLabel(r) === STATE.protoFilter);
+  }
+  if (STATE.search) {
+    const q = STATE.search.toLowerCase();
+    conns = conns.filter(r => JSON.stringify(r).toLowerCase().includes(q));
+  }
+  if (STATE.sortKey) {
+    conns.sort((a, b) => {
+      let av, bv;
+      if (STATE.sortKey === 'worst') { av = LEVEL_RANK[worstLevel(a.pqc_assessment)]; bv = LEVEL_RANK[worstLevel(b.pqc_assessment)]; }
+      else if (STATE.sortKey === 'protocol') { av = a.protocol; bv = b.protocol; }
+      else if (STATE.sortKey === 'src') { av = connLabel(a).src; bv = connLabel(b).src; }
+      else if (STATE.sortKey === 'dst') { av = connLabel(a).dst; bv = connLabel(b).dst; }
+      else if (STATE.sortKey === 'sensor') { av = (a.seen_by||[a.sensor_id]).join(); bv = (b.seen_by||[b.sensor_id]).join(); }
+      else { av = ''; bv = ''; }
+      if (av < bv) return -1 * STATE.sortDir;
+      if (av > bv) return 1 * STATE.sortDir;
+      return 0;
+    });
+  }
+  return conns;
+}
+
+function renderTable() {
+  const conns = filteredConnections();
+  document.getElementById('conn-count-tag').textContent = `${conns.length} / ${(STATE.cbom.connections||[]).length}`;
+  const tbody = document.getElementById('conn-tbody');
+  const empty = document.getElementById('empty-state');
+
+  if (!conns.length) {
+    tbody.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+
+  tbody.innerHTML = conns.map((r, idx) => {
+    const { src, dst } = connLabel(r);
+    const worst = worstLevel(r.pqc_assessment);
+    const dimDots = DIMENSIONS.map(d => {
+      const lvl = r.pqc_assessment?.[d]?.level || 'UNKNOWN';
+      return `<span class="dim-dot ${lvl}" title="${d}: ${lvl}"></span>`;
+    }).join('');
+    const sensors = (r.seen_by || [r.sensor_id]).filter(Boolean).join(', ');
+    const badgeClass = r.application_protocol || r.protocol;
+    return `<tr data-idx="${STATE.cbom.connections.indexOf(r)}">
+      <td><span class="proto-badge ${badgeClass}">${protoLabel(r)}</span></td>
+      <td class="mono-strong">${src}</td>
+      <td class="mono-strong">${dst}</td>
+      <td>${cryptoSummary(r)}</td>
+      <td><span class="level-pill ${worst}">${worst}</span></td>
+      <td><div class="dim-dots">${dimDots}</div></td>
+      <td>${sensors}</td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('tr').forEach(tr => {
+    tr.addEventListener('click', () => openDetail(STATE.cbom.connections[parseInt(tr.dataset.idx)]));
+  });
+}
+
+// ─── Modal di dettaglio ─────────────────────────────────────────────
+function openDetail(rec) {
+  const { src, dst } = connLabel(rec);
+  document.getElementById('modal-title').textContent = `${rec.protocol} — ${src} → ${dst}`;
+
+  let fieldsHtml = '';
+  const commonFields = [
+    ['Sensore', (rec.seen_by || [rec.sensor_id]).join(', ')],
+    ['Timestamp', rec.ts ? fmtTs(rec.ts) : '—'],
+    ['UID', rec.uid || rec.ike_uid || '—'],
+  ];
+  if (rec.protocol === 'TLS') {
+    commonFields.push(
+      ['Versione TLS', rec.tls_version], ['Cipher', rec.cipher], ['Curva', rec.curve || '—'],
+      ['Ripresa sessione', rec.resumed ? 'sì' : 'no'], ['PFS', rec.has_pfs === null ? 'n/d' : (rec.has_pfs ? 'sì' : 'no')],
+      ['Metodo osservazione certificato', rec.cert_observation_method]
+    );
+  } else if (rec.protocol === 'SSH') {
+    commonFields.push(
+      ['KEX', rec.kex_alg], ['Cipher', rec.cipher_alg], ['MAC', rec.mac_alg],
+      ['Host key', `${rec.host_key_alg} (${rec.host_key_fingerprint || '—'})`],
+      ['Tentativi auth', rec.auth_attempts ?? '—']
+    );
+  } else if (rec.protocol === 'IPSEC_IKE') {
+    const authLabel = (m) => m === 'psk' ? 'PSK (chiave pre-condivisa)' : m === 'pubkey' ? 'Certificato' : (m || '—');
+    commonFields.push(
+      ['Stato', rec.state], ['Identità locale', rec.local_id], ['Identità remota', rec.remote_id],
+      ['Proposta IKE (osservata)', `${rec.ike_enc}-${rec.ike_enc_bits} / ${rec.ike_prf} / ${rec.ike_group}`],
+      ['Proposta IKE (dichiarata)', rec.declared_ike_proposal || '—'],
+      ['Metodo di autenticazione', rec.auth_method ? `locale: ${authLabel(rec.auth_method.local)} · remoto: ${authLabel(rec.auth_method.remote)}` : '—'],
+      ['Rekey IKE (configurato)', rec.ike_rekey_time_seconds ? `${rec.ike_rekey_time_seconds}s (${Math.round(rec.ike_rekey_time_seconds/60)} min)` : '—'],
+      ['Rekey Child SA (configurato)', rec.child_rekey_time_seconds ? `${rec.child_rekey_time_seconds}s (${Math.round(rec.child_rekey_time_seconds/60)} min)` : '—'],
+      ['PFS sul piano dati, in questo campionamento', rec.data_plane_pfs_observed === null ? 'n/d — nessuna Child SA nota' : (rec.data_plane_pfs_observed ? 'osservata su almeno una Child SA' : 'non osservata')]
+    );
+  }
+
+  fieldsHtml = commonFields.map(([label, value]) => `
+    <div class="detail-field"><div class="df-label">${label}</div><div class="df-value">${value ?? '—'}</div></div>
+  `).join('');
+
+  const certObsLabels = {
+    not_observable_tls13_encrypted_certificate: 'Certificato non osservabile: TLS 1.3 cifra il messaggio Certificate — non è un dato mancante per errore, è strutturalmente invisibile a un osservatore passivo.',
+    not_observed: 'Nessun certificato osservato in questa sessione.',
+  };
+  let certHtml = '';
+  if (rec.certificate) {
+    certHtml = `<div class="detail-section-title">Certificato correlato</div>
+      <div class="detail-grid">
+        <div class="detail-field"><div class="df-label">Subject</div><div class="df-value">${rec.certificate.subject}</div></div>
+        <div class="detail-field"><div class="df-label">Issuer</div><div class="df-value">${rec.certificate.issuer}</div></div>
+        <div class="detail-field"><div class="df-label">Chiave</div><div class="df-value">${rec.certificate.key_type} ${rec.certificate.key_length || ''} ${rec.certificate.curve || ''}</div></div>
+        <div class="detail-field"><div class="df-label">Firma</div><div class="df-value">${rec.certificate.sig_alg}</div></div>
+      </div>`;
+  } else if (rec.protocol === 'TLS' && certObsLabels[rec.cert_observation_method]) {
+    certHtml = `<div class="detail-section-title">Certificato</div>
+      <div class="obs-note">${certObsLabels[rec.cert_observation_method]}</div>`;
+  }
+
+  let childSaHtml = '';
+  if (rec.child_sas && rec.child_sas.length) {
+    childSaHtml = `<div class="detail-section-title">Child SA (piano dati ESP) — dichiarato vs osservato</div>` +
+      rec.child_sas.map(c => {
+        const pfsObsColor = c.has_pfs ? 'var(--safe)' : 'var(--broken)';
+        const pfsDeclColor = c.declared_pfs_capable ? 'var(--safe)' : 'var(--broken)';
+        return `
+        <div class="detail-field" style="margin-bottom:8px;"><div class="df-label">Stato</div><div class="df-value">${c.state} · ${c.esp_enc}-${c.esp_enc_bits}</div></div>
+        <div class="decl-obs-grid">
+          <div class="decl-obs-col">
+            <div class="decl-obs-head">Dichiarato <span class="decl-obs-sub">(configurazione statica)</span></div>
+            <div class="decl-obs-row"><span>Proposta ESP</span><b>${c.declared_esp_proposal || '—'}</b></div>
+            <div class="decl-obs-row"><span>Gruppo DH</span><b>${c.declared_dh_group || '—'}</b></div>
+            <div class="decl-obs-row"><span>PFS possibile</span><b style="color:${pfsDeclColor}">${c.declared_pfs_capable === undefined ? '—' : (c.declared_pfs_capable ? 'sì' : 'no')}</b></div>
+          </div>
+          <div class="decl-obs-col">
+            <div class="decl-obs-head">Osservato <span class="decl-obs-sub">(questo campionamento)</span></div>
+            <div class="decl-obs-row"><span>Proposta ESP</span><b>${c.esp_enc}-${c.esp_enc_bits}${c.esp_group ? ' / ' + c.esp_group : ''}</b></div>
+            <div class="decl-obs-row"><span>Gruppo DH</span><b>${c.esp_group || '— (nessuno in questo campione)'}</b></div>
+            <div class="decl-obs-row"><span>PFS osservata</span><b style="color:${pfsObsColor}">${c.has_pfs ? 'sì' : 'no'}</b></div>
+          </div>
+        </div>
+        ${(c.declared_pfs_capable && !c.has_pfs) ? '<div class="obs-note" style="margin-top:8px;">La configurazione prevede PFS, non ancora osservata in questo campione: normale se la Child SA non ha ancora attraversato un rekey — la primissima Child SA, negoziata dentro IKE_AUTH, non porta mai un payload KE per costruzione del protocollo. Ricampiona dopo il tempo di rekey configurato per confermare.</div>' : ''}
+      `;
+      }).join('<div style="height:14px;"></div>');
+  }
+
+  const pqcHtml = rec.pqc_assessment ? `
+    <div class="detail-section-title">Valutazione PQC multi-dimensionale</div>
+    <div class="pqc-detail-grid">
+      ${DIMENSIONS.map(d => {
+        const info = rec.pqc_assessment[d] || {};
+        return `<div class="pqc-detail-cell">
+          <div class="pdc-label">${d}</div>
+          <span class="level-pill ${info.level || 'UNKNOWN'}">${info.level || 'UNKNOWN'}</span>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
+  let smtpHtml = '';
+  if (rec.application_protocol === 'SMTP' && rec.smtp_context) {
+    const consistencyColor = rec.smtp_tls_consistency === 'consistent' ? 'var(--safe)' : 'var(--broken)';
+    smtpHtml = `<div class="detail-section-title">Contesto SMTP (correlato da smtp.log)</div>
+      <div class="detail-grid">
+        <div class="detail-field"><div class="df-label">HELO</div><div class="df-value">${rec.smtp_context.helo || '—'}</div></div>
+        <div class="detail-field"><div class="df-label">Ultima risposta server</div><div class="df-value">${rec.smtp_context.last_reply || '—'}</div></div>
+        <div class="detail-field"><div class="df-label">Coerenza SMTP↔TLS</div><div class="df-value" style="color:${consistencyColor}">${rec.smtp_tls_consistency}</div></div>
+      </div>`;
+  }
+
+  let assetHtml = '';
+  if (rec.asset_hint) {
+    const entries = Object.entries(rec.asset_hint).filter(([k]) => k !== '_source');
+    assetHtml = `<div class="detail-section-title">Hostname (inventario esterno, non osservato sul filo)</div>
+      <div class="detail-grid">
+        ${entries.map(([k, v]) => `<div class="detail-field"><div class="df-label">${k}</div><div class="df-value">${v}</div></div>`).join('')}
+      </div>`;
+  }
+
+  document.getElementById('modal-body').innerHTML =
+    `<div class="detail-grid">${fieldsHtml}</div>${smtpHtml}${certHtml}${assetHtml}${childSaHtml}${pqcHtml}`;
+  document.getElementById('overlay').classList.add('show');
+}
+
+// ─── Orchestrazione render ──────────────────────────────────────────
+function render() {
+  renderKPIs(); renderRadar(); renderDimBars(); renderSensors(); renderCerts(); renderProtoFilters(); renderTable();
+}
+
+// ─── Event wiring ────────────────────────────────────────────────────
+document.getElementById('modal-close').addEventListener('click', () => document.getElementById('overlay').classList.remove('show'));
+document.getElementById('overlay').addEventListener('click', (e) => { if (e.target.id === 'overlay') e.currentTarget.classList.remove('show'); });
+
+document.getElementById('search-box').addEventListener('input', (e) => { STATE.search = e.target.value; renderTable(); });
+
+document.querySelectorAll('.filter-chip[data-filter-group="risk"]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip[data-filter-group="risk"]').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    STATE.riskFilter = chip.dataset.filter;
+    renderTable();
+  });
+});
+
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    STATE.sortDir = (STATE.sortKey === key) ? -STATE.sortDir : 1;
+    STATE.sortKey = key;
+    renderTable();
+  });
+});
+
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const cbom = JSON.parse(e.target.result);
+      ingest(cbom, file.name);
+    } catch (err) {
+      alert('File JSON non valido: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ─── Home screen: selezione file, drag&drop, dati demo ──────────────
+const homeDrop = document.getElementById('home-drop');
+const homeFileInput = document.getElementById('home-file-input');
+
+homeDrop.addEventListener('click', () => homeFileInput.click());
+homeFileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+['dragover', 'dragenter'].forEach(ev => homeDrop.addEventListener(ev, (e) => {
+  e.preventDefault(); e.stopPropagation(); homeDrop.classList.add('drag');
+}));
+['dragleave'].forEach(ev => homeDrop.addEventListener(ev, (e) => {
+  e.preventDefault(); e.stopPropagation(); homeDrop.classList.remove('drag');
+}));
+homeDrop.addEventListener('drop', (e) => {
+  e.preventDefault(); e.stopPropagation(); homeDrop.classList.remove('drag');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+document.body.addEventListener('dragover', (e) => e.preventDefault());
+document.body.addEventListener('drop', (e) => e.preventDefault());
+
+document.getElementById('home-demo-btn').addEventListener('click', () => ingest(loadDemoData(), 'dati demo'));
+
+// ─── Dashboard: pulsante "cambia file" per tornare alla home ─────────
+document.getElementById('back-home-btn').addEventListener('click', () => {
+  document.getElementById('app-view').classList.add('hidden');
+  document.getElementById('home-view').classList.remove('hidden');
+  document.getElementById('home-file-input').value = '';
+});
+
+</script>
+</body>
+</html>

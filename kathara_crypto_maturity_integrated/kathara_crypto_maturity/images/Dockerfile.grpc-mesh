@@ -1,0 +1,29 @@
+# images/Dockerfile.grpc-mesh — svca, svcb
+FROM debian:bookworm-slim
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 python3-pip iproute2 iputils-ping \
+        tcpdump curl gnupg ca-certificates \
+    && pip3 install --break-system-packages --no-cache-dir grpcio protobuf cryptography \
+    && rm -rf /var/lib/apt/lists/*
+# cryptography: usata da mesh_node.py per estrarre il CN dal certificato
+# X.509 del peer mTLS nelle risposte Hello/Chain (osservabilità applicativa,
+# oltre a quella di rete già coperta da Zeek).
+
+# Zeek: dà copertura a netmesh. Installato in entrambe le immagini (svca e
+# svcb condividono lo stesso Dockerfile) ma AVVIATO SOLO su svca — vedi
+# svca.startup/svcb.startup. netmesh è una rete switchata: svca e svcb si
+# parlano direttamente, senza passare da un gateway; un terzo host (es.
+# apigw) non vedrebbe nulla del loro traffico. L'unico vantage point reale
+# è uno dei due endpoint stessi, e uno solo basta per vedere l'intera
+# sessione bidirezionale.
+RUN curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_12/Release.key \
+        | gpg --dearmor -o /usr/share/keyrings/zeek-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/zeek-archive-keyring.gpg] \
+        https://download.opensuse.org/repositories/security:zeek/Debian_12/ /" \
+        > /etc/apt/sources.list.d/security:zeek.list \
+    && apt-get update && apt-get install -y --no-install-recommends zeek \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/opt/zeek/bin:${PATH}"
+CMD ["/bin/bash"]

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# dmzgw.startup — gateway/router DMZ
+set -e
+
+ip addr add 10.6.0.2/30 dev eth0   # netfwdmz (verso mainfw)
+ip addr add 10.1.0.1/24 dev eth1   # DMZ
+ip link set eth0 up; ip link set eth1 up; ip link set lo up
+
+
+ip route add default via 10.6.0.1 dev eth0
+ip route add 10.9.1.0/24 via 10.6.0.1 dev eth0 2>/dev/null || true   # ritorno pool employee
+ip route add 10.9.2.0/24 via 10.6.0.1 dev eth0 2>/dev/null || true   # ritorno pool admin
+
+mkdir -p /shared/dmzgw/zeeklogs
+cd /shared/dmzgw/zeeklogs
+nohup zeek -i eth1 LogAscii::use_json=T > /var/log/zeek-startup.log 2>&1 &
+
+echo "[dmzgw] avvio completato"

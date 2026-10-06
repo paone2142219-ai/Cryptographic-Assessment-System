@@ -1,0 +1,1495 @@
+/* ─── RESET & BASE ─────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-primary:     #ffffff;
+  --bg-secondary:   #f7f7f6;
+  --bg-tertiary:    #f0efed;
+
+  --text-primary:   #1a1a18;
+  --text-secondary: #5a5a57;
+  --text-tertiary:  #9a9a96;
+
+  --border-light:   rgba(0,0,0,0.08);
+  --border-mid:     rgba(0,0,0,0.14);
+  --border-strong:  rgba(0,0,0,0.22);
+
+  --blue-50:   #E6F1FB;
+  --blue-600:  #185FA5;
+  --blue-800:  #0C447C;
+
+  --green-50:  #EAF3DE;
+  --green-600: #3B6D11;
+  --green-800: #27500A;
+
+  --amber-50:  #FAEEDA;
+  --amber-400: #EF9F27;
+  --amber-600: #854F0B;
+  --amber-800: #633806;
+
+  --red-50:    #FCEBEB;
+  --red-600:   #A32D2D;
+  --red-400:   #E24B4A;
+
+  --purple-50:  #EEEDFE;
+  --purple-600: #534AB7;
+  --purple-800: #3C3489;
+
+  --gray-50:  #F1EFE8;
+  --gray-400: #888780;
+  --gray-600: #5F5E5A;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+
+  --sidebar-width: 248px;
+  --topbar-height: 57px;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary:     #1c1c1a;
+    --bg-secondary:   #242422;
+    --bg-tertiary:    #2a2a28;
+
+    --text-primary:   #e8e8e4;
+    --text-secondary: #a8a8a4;
+    --text-tertiary:  #686864;
+
+    --border-light:   rgba(255,255,255,0.07);
+    --border-mid:     rgba(255,255,255,0.12);
+    --border-strong:  rgba(255,255,255,0.20);
+
+    --blue-50:   #0d2540;
+    --blue-600:  #378ADD;
+    --blue-800:  #B5D4F4;
+
+    --green-50:  #152808;
+    --green-600: #639922;
+    --green-800: #C0DD97;
+
+    --amber-50:  #2a1c04;
+    --amber-400: #BA7517;
+    --amber-600: #FAC775;
+    --amber-800: #FAEEDA;
+
+    --red-50:    #2a0a0a;
+    --red-600:   #E24B4A;
+    --red-400:   #F7C1C1;
+
+    --purple-50:  #1a1840;
+    --purple-600: #7F77DD;
+    --purple-800: #CECBF6;
+
+    --gray-50:  #252523;
+    --gray-400: #888780;
+    --gray-600: #B4B2A9;
+  }
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── LAYOUT ────────────────────────────────────────────────────────────────── */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ───────────────────────────────────────────────────────────────── */
+.sidebar {
+  background: var(--bg-secondary);
+  border-right: 0.5px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 16px;
+  border-bottom: 0.5px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--blue-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-logo i {
+  font-size: 20px;
+  color: var(--blue-600);
+}
+
+.sidebar-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.sidebar-header p {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+
+.nav-section {
+  flex: 1;
+  padding: 8px 0;
+  overflow-y: auto;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  padding: 10px 16px 4px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-left: 2px solid transparent;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  user-select: none;
+}
+
+.nav-item:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-left-color: var(--blue-600);
+  font-weight: 500;
+}
+
+.nav-item i {
+  font-size: 16px;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.proto-badge {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.badge-ipsec { background: var(--blue-50);   color: var(--blue-800); }
+.badge-tls   { background: var(--green-50);  color: var(--green-800); }
+.badge-ssh   { background: var(--amber-50);  color: var(--amber-800); }
+
+.sidebar-footer {
+  border-top: 0.5px solid var(--border-light);
+  padding: 4px 0;
+  flex-shrink: 0;
+}
+
+/* ─── MAIN ──────────────────────────────────────────────────────────────────── */
+.main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: var(--topbar-height);
+  border-bottom: 0.5px solid var(--border-light);
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+.topbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.topbar h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.proto-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ─── BUTTONS ───────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-mid);
+  background: transparent;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background 0.12s, border-color 0.12s, transform 0.08s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-strong);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn i {
+  font-size: 15px;
+}
+
+.btn-primary {
+  background: var(--blue-600);
+  color: #fff;
+  border-color: var(--blue-600);
+}
+
+.btn-primary:hover {
+  background: var(--blue-800);
+  border-color: var(--blue-800);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: background 0.12s;
+}
+
+.btn-icon:hover {
+  background: var(--bg-secondary);
+}
+
+/* ─── CONTENT ───────────────────────────────────────────────────────────────── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ─── TABS ──────────────────────────────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  border-bottom: 0.5px solid var(--border-light);
+  margin-bottom: 20px;
+  gap: 0;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -0.5px;
+  transition: color 0.12s, border-color 0.12s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.tab i {
+  font-size: 15px;
+}
+
+.tab:hover:not(.active) {
+  color: var(--text-primary);
+}
+
+.tab.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--blue-600);
+  font-weight: 500;
+}
+
+/* ─── CARDS ─────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-primary);
+  border: 0.5px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.card-header h3 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.card-icon {
+  font-size: 18px;
+  color: var(--blue-600);
+}
+
+/* ─── PARAM GRID ────────────────────────────────────────────────────────────── */
+.param-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .param-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .param-grid { grid-template-columns: 1fr; }
+}
+
+.param-box {
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.param-box.deviant {
+  border-color: var(--amber-400);
+  background: var(--amber-50);
+}
+
+.param-box label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.param-box.deviant label {
+  color: var(--amber-600);
+}
+
+/* Field structurally non-editable in the current context (e.g. KEX curve
+   when the chosen cipher suite is static RSA key transport) — distinct
+   from the "deviant" state: it is not a configuration to fix, it is a
+   degree of freedom the protocol does not offer with the current combination. */
+.param-box.not-applicable {
+  opacity: 0.6;
+}
+
+.param-box.not-applicable label {
+  color: var(--text-tertiary);
+}
+
+.param-box select:disabled {
+  cursor: not-allowed;
+  background-image: none;
+  padding-right: 0;
+}
+
+.param-box select {
+  font-size: 13px;
+  font-family: var(--font-sans);
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  width: 100%;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0px center;
+  padding-right: 18px;
+}
+
+/* ─── LIFECYCLE & DATA GOVERNANCE — QUANTUM RISK BADGE ────────────────────────
+   Outcome of the computeQuantumRiskPreview() heuristic in app.js
+   (client-side mirror of graph_writer._compute_quantum_risk): reuses the
+   same semantic palette as the old compliance strip (green/red, removed)
+   for visual consistency. */
+.risk-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-mid);
+  margin-top: 14px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.risk-badge i {
+  font-size: 16px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.risk-badge strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12.5px;
+}
+
+.risk-badge.risk-ok   { background: var(--green-50); color: var(--green-600); border-color: #C0DD97; }
+.risk-badge.risk-warn { background: var(--red-50);   color: var(--red-600);   border-color: var(--red-400); }
+
+/* Context (governance) risk — 4-level scale, distinct from the binary
+   ok/warn of the quantum risk above: reuses the same color design tokens
+   already defined (green/amber/red), with MEDIUM as a neutral
+   intermediate tint (blue) instead of inventing a fifth color. */
+.risk-badge.risk-low      { background: var(--green-50); color: var(--green-600); border-color: #C0DD97; }
+.risk-badge.risk-medium   { background: var(--blue-50);  color: var(--blue-600);  border-color: #A9C7E8; }
+.risk-badge.risk-high     { background: var(--amber-50); color: var(--amber-600); border-color: var(--amber-400); }
+.risk-badge.risk-critical { background: var(--red-50);   color: var(--red-600);   border-color: var(--red-400); }
+.risk-badge.risk-unknown  { background: var(--border-light); color: var(--text-secondary); border-color: var(--border-mid); }
+
+.cmp-persisted-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .03em; color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 6px; margin-top: 10px;
+}
+.cmp-persisted-empty { font-size: 12px; color: var(--text-tertiary); margin: 8px 0 0; }
+
+/* ─── ASSET LIST ────────────────────────────────────────────────────────────── */
+.asset-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--border-light);
+}
+
+.asset-row:last-child {
+  border-bottom: none;
+}
+
+.asset-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 0.5px solid var(--border-light);
+}
+
+.asset-icon i {
+  font-size: 17px;
+  color: var(--blue-600);
+}
+
+.asset-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.asset-info p {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.asset-info span {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.asset-fields {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.asset-fields input {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  padding: 5px 9px;
+  border: 0.5px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.asset-fields input:focus {
+  border-color: var(--blue-600);
+  box-shadow: 0 0 0 2px rgba(24, 95, 165, 0.12);
+}
+
+.asset-fields input.ip-field   { width: 116px; }
+.asset-fields input.host-field { width: 108px; }
+
+.asset-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-tertiary);
+  transition: background 0.12s, color 0.12s;
+}
+
+.asset-delete:hover {
+  background: var(--red-50);
+  color: var(--red-600);
+}
+
+/* ─── TOPOLOGY & ASSETS TAB ─────────────────────────────────────────────────── */
+.topology-card {
+  padding: 16px 18px 12px;
+}
+
+.topology-canvas {
+  width: 100%;
+  /* The SVG has viewBox 692×310 — aspect ratio ~2.23:1.
+     min-height guarantees readability on narrow screens. */
+  min-height: 280px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  /* Slightly darker background to make the light zones stand out */
+  background: #f1f5f9;
+  border: 0.5px solid var(--border-light, #e2e8f0);
+}
+
+.topology-canvas svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.topology-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 0.5px solid var(--border-light);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.topology-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.topology-legend i {
+  font-size: 13px;
+}
+
+/* Each panel represents a network zone involved in the use case: the
+   zone is fixed (derived from zoneOf() in app.js), only the hostname/IP
+   inputs inside it are editable — see renderTopologyAssets. */
+.zone-panel {
+  background: var(--bg-primary);
+  border: 0.5px solid var(--border-light);
+  border-left: 3px solid var(--zone-stroke, var(--blue-600));
+  border-radius: var(--radius-lg);
+  padding: 14px 20px;
+  margin-bottom: 12px;
+}
+
+.zone-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  padding-bottom: 8px;
+  border-bottom: 0.5px solid var(--border-light);
+}
+
+.zone-panel-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--zone-stroke, var(--blue-600));
+  flex-shrink: 0;
+}
+
+.zone-panel-title {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.zone-panel-title strong {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.zone-panel-title span {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+}
+
+.zone-panel-count {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--zone-tx, var(--text-secondary));
+  background: var(--zone-fill, var(--bg-secondary));
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.zone-panel-body .asset-row:last-child {
+  border-bottom: none;
+}
+
+/* ─── FINDINGS ──────────────────────────────────────────────────────────────── */
+.info-box {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--blue-50);
+  border-left: 3px solid var(--blue-600);
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.info-icon {
+  font-size: 18px;
+  color: var(--blue-600);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.pipeline-diagram {
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.pipe-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 80px;
+}
+
+.pipe-node-box {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px solid var(--border-mid);
+}
+
+.pipe-node-box i {
+  font-size: 22px;
+}
+
+.pipe-node span {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.pipe-arrow {
+  color: var(--text-tertiary);
+  font-size: 16px;
+  padding: 0 4px;
+  flex-shrink: 0;
+  margin-bottom: 20px;
+}
+
+.pipe-gray   { background: var(--gray-50);   border-color: #D3D1C7; }
+.pipe-gray i { color: var(--gray-600); }
+
+.pipe-blue   { background: var(--blue-50);   border-color: #B5D4F4; }
+.pipe-blue i { color: var(--blue-600); }
+
+.pipe-green   { background: var(--green-50);  border-color: #C0DD97; }
+.pipe-green i { color: var(--green-600); }
+
+.pipe-purple   { background: var(--purple-50); border-color: #AFA9EC; }
+.pipe-purple i { color: var(--purple-600); }
+
+.pipe-red   { background: var(--red-50);   border-color: #F7C1C1; }
+.pipe-red i { color: var(--red-600); }
+
+/* ─── SESSION DIAGRAM ───────────────────────────────────────────────────────
+   Point-to-point diagram between the two assets delivering the selected
+   use case. Purely illustrative/relational — it shows WHO talks to WHOM,
+   over WHICH protocol, for WHICH use case. It is not a status panel: the
+   animated "packets" on the wire represent the concept of negotiation
+   (proposal ↔ agreement), not data actually observed at a given moment.
+   Colors scoped by protoFamily, consistent with the .badge-ipsec/.badge-tls/
+   .badge-ssh already used in the sidebar. */
+.session-diagram {
+  flex-shrink: 0;
+  margin: 18px 24px 0 24px;
+  padding: 26px 32px 20px;
+  border-radius: var(--radius-xl);
+  border: 0.5px solid var(--border-light);
+  background:
+    radial-gradient(ellipse 80% 100% at 0% 0%, var(--bg-secondary) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 100% at 100% 100%, var(--bg-secondary) 0%, transparent 60%),
+    var(--bg-primary);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.session-diagram.family-ipsec { --sd-accent: var(--blue-600);  --sd-accent-50: var(--blue-50);  --sd-accent-800: var(--blue-800); }
+.session-diagram.family-tls   { --sd-accent: var(--green-600); --sd-accent-50: var(--green-50); --sd-accent-800: var(--green-800); }
+.session-diagram.family-ssh   { --sd-accent: var(--amber-600); --sd-accent-50: var(--amber-50); --sd-accent-800: var(--amber-800); }
+
+.sd-node {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  min-width: 168px;
+}
+
+.sd-node-icon {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--sd-accent-50);
+  border: 1.5px solid var(--sd-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sd-node-icon i {
+  font-size: 22px;
+  color: var(--sd-accent);
+  z-index: 1;
+}
+
+/* Continuous "radar ping" ring behind the icon — a purely ambient effect,
+   not synchronized with the packets on the wire: it conveys "active
+   endpoint", not a precise event. */
+.sd-node-icon::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sd-accent);
+  opacity: 0;
+  animation: sd-ping 3.2s ease-out infinite;
+}
+.sd-node:last-child .sd-node-icon::before { animation-delay: 1.6s; }
+
+@keyframes sd-ping {
+  0%   { transform: scale(0.85); opacity: 0.55; }
+  70%  { transform: scale(1.55); opacity: 0; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+.sd-node-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.sd-node-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sd-node-role {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sd-node-meta {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+}
+
+/* ── Central link ── */
+.sd-link {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 120px;
+}
+
+.sd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sd-badge-proto {
+  background: var(--sd-accent-50);
+  color: var(--sd-accent-800);
+  border: 0.5px solid var(--sd-accent);
+}
+
+.sd-badge-proto i { font-size: 13px; }
+
+.sd-badge-usecase {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 0.5px dashed var(--border-mid);
+  font-weight: 500;
+}
+
+.sd-badge-usecase i { font-size: 12px; color: var(--text-tertiary); }
+
+.sd-track {
+  position: relative;
+  width: 100%;
+  min-width: 100px;
+  height: 18px;
+}
+
+.sd-track::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--sd-accent) 0, var(--sd-accent) 5px,
+    transparent 5px, transparent 11px
+  );
+  opacity: 0.45;
+}
+
+.sd-endpoint {
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sd-accent);
+  transform: translate(-50%, -50%);
+}
+.sd-endpoint-a { left: 0; }
+.sd-endpoint-b { left: 100%; }
+
+/* Animated packets: the "proposal" travels A→B, the "negotiated/agreement"
+   comes back B→A shortly after — the choreography (not just a static
+   color) is what makes the very concept of two-way negotiation visible,
+   instead of a plain undifferentiated encrypted channel. */
+.sd-packet {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border-radius: 2px;
+}
+
+.sd-packet-fwd {
+  background: var(--sd-accent);
+  box-shadow: 0 0 6px var(--sd-accent);
+  animation: sd-flow-fwd 2.6s cubic-bezier(.4,0,.2,1) infinite;
+}
+
+.sd-packet-back {
+  background: var(--text-secondary);
+  box-shadow: 0 0 5px var(--border-strong);
+  animation: sd-flow-back 2.6s cubic-bezier(.4,0,.2,1) infinite;
+  animation-delay: 1.3s;
+}
+
+@keyframes sd-flow-fwd {
+  0%   { left: 0%;   opacity: 0; }
+  8%   { opacity: 1; }
+  46%  { opacity: 1; }
+  50%  { left: 100%; opacity: 0; }
+  100% { left: 100%; opacity: 0; }
+}
+
+@keyframes sd-flow-back {
+  0%   { left: 100%; opacity: 0; }
+  8%   { opacity: 1; }
+  46%  { opacity: 1; }
+  50%  { left: 0%;   opacity: 0; }
+  100% { left: 0%;   opacity: 0; }
+}
+
+.sd-legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 2px;
+}
+
+.sd-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+.sd-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  display: inline-block;
+}
+.sd-dot-fwd  { background: var(--sd-accent); }
+.sd-dot-back { background: var(--text-secondary); }
+
+@media (max-width: 900px) {
+  .session-diagram { flex-direction: column; align-items: stretch; }
+  .sd-node { min-width: 0; }
+  .sd-track { width: 100%; }
+}
+
+.finding-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 52px 24px;
+  color: var(--text-tertiary);
+  gap: 10px;
+  text-align: center;
+  border: 0.5px dashed var(--border-mid);
+  border-radius: var(--radius-lg);
+}
+
+.finding-placeholder i {
+  font-size: 36px;
+  color: var(--text-tertiary);
+}
+
+.finding-placeholder p {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.finding-placeholder .placeholder-sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+.finding {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 10px;
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-light);
+}
+
+.finding i.find-icon {
+  font-size: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.finding-body { flex: 1; min-width: 0; }
+
+.finding-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.finding-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.finding-asset {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.finding-asset i { font-size: 12px; }
+
+.finding-severity {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.finding-severity-fail { background: var(--red-50); color: var(--red-600); }
+.finding-severity-warn { background: var(--amber-50); color: var(--amber-600); }
+
+.finding-values {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.finding-values-label {
+  display: block;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.finding-detail {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin: 0 0 6px;
+}
+
+.finding-date {
+  font-size: 11px;
+  color: var(--text-secondary);
+  opacity: 0.75;
+}
+
+.finding-fail   { border-left: 3px solid var(--red-400); }
+.finding-fail i { color: var(--red-600); }
+
+.finding-warn   { border-left: 3px solid var(--amber-400); }
+.finding-warn i { color: var(--amber-600); }
+
+.finding-ok   { border-left: 3px solid #639922; }
+.finding-ok i { color: var(--green-600); }
+
+/* ─── CYPHER OUTPUT ─────────────────────────────────────────────────────────── */
+.cypher-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.cypher-box {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.cypher-box .kw   { color: var(--blue-600); font-weight: 600; }
+.cypher-box .lbl  { color: var(--green-600); }
+.cypher-box .str  { color: var(--amber-600); }
+.cypher-box .prop { color: var(--purple-600); }
+.cypher-box .cmt  { color: var(--text-tertiary); font-style: italic; }
+
+.export-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* ─── MODAL ─────────────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  border: 0.5px solid var(--border-mid);
+  width: min(760px, 95vw);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 0.5px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.modal-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.modal-cypher {
+  flex: 1;
+  overflow-y: auto;
+  border-radius: 0;
+  margin: 12px 16px 0;
+  max-height: 50vh;
+}
+
+/* ─── SCROLLBARS ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+/* ─── TOAST ─────────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* ─── Expected/Observed comparison table (Comparison tab) ─────────────── */
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cmp-table th {
+  text-align: left; padding: 8px 10px; font-weight: 600;
+  border-bottom: 1px solid var(--gray-400); color: var(--gray-600);
+}
+.cmp-table td { padding: 7px 10px; border-bottom: 1px solid var(--gray-50); }
+.cmp-row.cmp-ok    { background: var(--green-50); }
+.cmp-row.cmp-oktier { background: var(--blue-50); cursor: help; }
+.cmp-row.cmp-warn  { background: var(--amber-50); }
+.cmp-row.cmp-muted { background: transparent; color: var(--gray-600); }
+.cmp-row.cmp-ok    td:last-child { color: #3a6b12; font-weight: 600; }
+.cmp-row.cmp-oktier td:last-child { color: var(--blue-600); font-weight: 600; }
+.cmp-row.cmp-warn  td:last-child { color: var(--amber-600); font-weight: 600; }
+.cmp-row.cmp-muted td:last-child { color: var(--gray-400); }
+
+/* ─── Relation/Criterion columns, comparison table ─────────────────────── */
+.cmp-inequality { font-family: monospace; font-size: 12px; white-space: nowrap; }
+.cmp-criterion  { font-size: 12px; color: var(--gray-600); cursor: help; }
+/* ─── QUANTUM-SAFE PRIMITIVES ────────────────────────────────────────────── */
+/* Green param-box when the selected value is hybrid/native PQ */
+.param-box.quantum-safe {
+  border-color: var(--green-600);
+  background: var(--green-50);
+}
+
+.param-box.quantum-safe label {
+  color: var(--green-800);
+}
+
+.param-box.quantum-safe select {
+  color: var(--green-800);
+}
+
+/* Inline "PQ" badge next to the label */
+.qs-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--green-600);
+  color: #fff;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* PQ options in the <select> — highlighted in green in the dropdown */
+.param-box select option[data-qs="1"] {
+  color: var(--green-700);
+  font-weight: 600;
+}
+/* ─── SSH ProxyJump — session diagram ──────────────────────────────────── */
+/* SSH #1 and SSH #2 badges with distinct colors for the two contexts */
+.sd-badge-ctx1 {
+  background: rgba(13,149,136,.12);
+  color: #0d9488;
+  border: 0.5px solid rgba(13,149,136,.4);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700;
+}
+.sd-badge-ctx2 {
+  background: rgba(99,102,241,.12);
+  color: #6366f1;
+  border: 0.5px solid rgba(99,102,241,.4);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700;
+}
+
+/* Relay node (bastion): visually distinct look — it is not a final endpoint */
+.sd-node-relay {
+  background: rgba(99,102,241,.04);
+  border: 0.5px dashed rgba(99,102,241,.35);
+  border-radius: 10px;
+  padding: 8px 10px;
+  align-items: flex-start;
+}
+.sd-node-icon-relay {
+  background: rgba(99,102,241,.12) !important;
+  border-color: rgba(99,102,241,.5) !important;
+}
+.sd-node-icon-relay i { color: #6366f1 !important; }
+
+.sd-relay-label {
+  font-size: 11px; font-weight: 700;
+  color: #6366f1; display: block; margin-top: 2px;
+}
+.sd-relay-note {
+  font-size: 10px; color: var(--text-tertiary);
+  display: block; margin-top: 4px;
+  font-style: italic; line-height: 1.4;
+  max-width: 200px;
+}
+
+/* ─── SSH #2 context separator in the Parameters panel ─────────────────── */
+.ctx2-separator {
+  margin: 22px 0 14px;
+  border-top: 1.5px solid rgba(99,102,241,.25);
+  padding-top: 14px;
+}
+.ctx2-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 700; color: #6366f1;
+}
+.ctx2-label i { font-size: 15px; }
+.ctx2-note {
+  font-size: 11px; font-weight: 400;
+  color: var(--text-tertiary); margin-left: 4px;
+}
+
+/* ─── Expected/Observed comparison — SSH ProxyJump context headers ────── */
+.cmp-ctx-header {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 16px;
+  border-radius: 8px 8px 0 0;
+  font-size: 13px; font-weight: 700;
+  border: 1px solid transparent;
+  border-bottom: none;
+}
+.cmp-ctx-header span {
+  font-weight: 400; font-size: 11.5px;
+  color: inherit; opacity: 0.75; margin-left: 2px;
+}
+.cmp-ctx-header i { font-size: 15px; }
+
+.cmp-ctx1 {
+  background: rgba(13,149,136,.10);
+  color: #0d9488;
+  border-color: rgba(13,149,136,.30);
+}
+.cmp-ctx2 {
+  background: rgba(99,102,241,.10);
+  color: #6366f1;
+  border-color: rgba(99,102,241,.30);
+}
+
+/* ─── Read-only asset (virtual/dynamic IP) ────────────────────────────── */
+.asset-row-readonly {
+  opacity: 0.72;
+  background: var(--bg-secondary);
+}
+.asset-row-readonly .host-field,
+.asset-row-readonly .ip-field {
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+  border-style: dashed;
+}
+.asset-readonly-note {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10.5px; color: var(--text-tertiary);
+  margin-top: 3px; font-style: italic;
+}
+.asset-readonly-note i { font-size: 11px; }
+
+/* ─── Derived PQC posture badge ─────────────────────────────────────────── */
+.pq-posture-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-light);
+  margin-top: 14px;
+}
+.pq-posture-label {
+  font-size: 11.5px; color: var(--text-tertiary); font-style: italic;
+}
+.pq-posture-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 700; white-space: nowrap;
+  flex-shrink: 0;
+}
+.pq-posture-badge i { font-size: 14px; }
+
+.pq-native  { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+.pq-hybrid  { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.pq-classic { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+/* ─── Inline AEAD badge in the parameters panel ──────────────────────────── */
+/* Small badge next to the MAC field label when the cipher is AEAD.
+   The hover tooltip explains the semantics — no additional card. */
+.param-box-aead {
+  cursor: help;
+}
+.aead-inline-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--green-600, #16a34a);
+  color: #fff;
+  vertical-align: middle;
+  margin-left: 5px;
+}

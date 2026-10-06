@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# remotehost.startup — host rappresentativo della sede remota
+set -e
+ip addr add 192.168.0.50/24 dev eth0
+ip link set eth0 up; ip link set lo up
+ip route add default via 192.168.0.1 dev eth0
+echo "[remotehost] avvio completato"

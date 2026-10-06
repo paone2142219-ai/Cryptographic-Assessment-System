@@ -1,0 +1,16 @@
+{"ts":1788253645.886604,"uid":"CY7GOc4fmgmj0WMga8","id.orig_h":"10.9.2.1","id.orig_p":35968,"id.resp_h":"10.3.0.2","id.resp_p":22,"name":"possible_split_routing","notice":false,"peer":"zeek"}
+{"ts":1788253645.887189,"uid":"CY7GOc4fmgmj0WMga8","id.orig_h":"10.9.2.1","id.orig_p":35968,"id.resp_h":"10.3.0.2","id.resp_p":22,"name":"data_before_established","notice":false,"peer":"zeek","source":"TCP"}
+{"ts":1788253648.577106,"uid":"CY7GOc4fmgmj0WMga8","id.orig_h":"10.9.2.1","id.orig_p":35968,"id.resp_h":"10.3.0.2","id.resp_p":22,"name":"inappropriate_FIN","notice":false,"peer":"zeek","source":"TCP"}
+{"ts":1788253654.883492,"uid":"CXTeMx3w99wE2L1fA9","id.orig_h":"10.9.2.1","id.orig_p":35980,"id.resp_h":"10.3.0.2","id.resp_p":22,"name":"possible_split_routing","notice":false,"peer":"zeek"}
+{"ts":1788253654.883628,"uid":"CXTeMx3w99wE2L1fA9","id.orig_h":"10.9.2.1","id.orig_p":35980,"id.resp_h":"10.3.0.2","id.resp_p":22,"name":"data_before_established","notice":false,"peer":"zeek","source":"TCP"}
+{"ts":1788253680.581587,"uid":"CE4XE7ahybhQiokA6","id.orig_h":"10.9.2.1","id.orig_p":34602,"id.resp_h":"10.1.0.10","id.resp_p":443,"name":"possible_split_routing","notice":false,"peer":"zeek"}
+{"ts":1788253680.58667,"uid":"CE4XE7ahybhQiokA6","id.orig_h":"10.9.2.1","id.orig_p":34602,"id.resp_h":"10.1.0.10","id.resp_p":443,"name":"data_before_established","notice":false,"peer":"zeek","source":"TCP"}
+{"ts":1788253680.623393,"uid":"CE4XE7ahybhQiokA6","id.orig_h":"10.9.2.1","id.orig_p":34602,"id.resp_h":"10.1.0.10","id.resp_p":443,"name":"inappropriate_FIN","notice":false,"peer":"zeek","source":"TCP"}
+{"ts":1788253705.271006,"uid":"CXfaXf211hpAtUHPwa","id.orig_h":"10.9.2.1","id.orig_p":43584,"id.resp_h":"10.1.0.10","id.resp_p":443,"name":"possible_split_routing","notice":false,"peer":"zeek"}
+{"ts":1788253705.273326,"uid":"CXfaXf211hpAtUHPwa","id.orig_h":"10.9.2.1","id.orig_p":43584,"id.resp_h":"10.1.0.10","id.resp_p":443,"name":"data_before_established","notice":false,"peer":"zeek","source":"TCP"}
+{"ts":1788253705.461848,"uid":"CXfaXf211hpAtUHPwa","id.orig_h":"10.9.2.1","id.orig_p":43584,"id.resp_h":"10.1.0.10","id.resp_p":443,"name":"inappropriate_FIN","notice":false,"peer":"zeek","source":"TCP"}
+{"ts":1788253717.067304,"uid":"CHwkXnEX7AC6RZUib","id.orig_h":"10.9.2.1","id.orig_p":56104,"id.resp_h":"10.1.0.10","id.resp_p":443,"name":"possible_split_routing","notice":false,"peer":"zeek"}
+{"ts":1788253717.069805,"uid":"CHwkXnEX7AC6RZUib","id.orig_h":"10.9.2.1","id.orig_p":56104,"id.resp_h":"10.1.0.10","id.resp_p":443,"name":"data_before_established","notice":false,"peer":"zeek","source":"TCP"}
+{"ts":1788253717.13899,"uid":"CHwkXnEX7AC6RZUib","id.orig_h":"10.9.2.1","id.orig_p":56104,"id.resp_h":"10.1.0.10","id.resp_p":443,"name":"inappropriate_FIN","notice":false,"peer":"zeek","source":"TCP"}
+{"ts":1788253998.87776,"uid":"CSFJWh2OvJwd9A42ul","id.orig_h":"10.9.2.1","id.orig_p":42416,"id.resp_h":"10.1.0.12","id.resp_p":22,"name":"possible_split_routing","notice":false,"peer":"zeek"}
+{"ts":1788253998.8782,"uid":"CSFJWh2OvJwd9A42ul","id.orig_h":"10.9.2.1","id.orig_p":42416,"id.resp_h":"10.1.0.12","id.resp_p":22,"name":"data_before_established","notice":false,"peer":"zeek","source":"TCP"}

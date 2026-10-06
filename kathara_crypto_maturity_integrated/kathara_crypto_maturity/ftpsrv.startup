@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# ftpsrv.startup — SFTP server DMZ, chroot per l'utente esterno
+set -e
+
+ip addr add 10.1.0.12/24 dev eth0
+ip link set eth0 up; ip link set lo up
+ip route add default via 10.1.0.1 dev eth0
+
+# Utente sftpuser: nessuna shell, home come richiesto da ChrootDirectory.
+# OpenSSH impone che ChrootDirectory e tutte le directory superiori fino
+# alla radice siano possedute da root e non scrivibili da group/other:
+# per questo la directory di upload effettiva è una sottodirectory
+# (upload/) di proprietà dell'utente, non la home stessa.
+id sftpuser &>/dev/null || useradd -M -d /home/sftpuser -s /usr/sbin/nologin sftpuser
+mkdir -p /home/sftpuser/upload
+chown root:root /home/sftpuser
+chmod 755 /home/sftpuser
+chown sftpuser:sftpuser /home/sftpuser/upload
+chmod 700 /home/sftpuser/upload
+
+mkdir -p /home/sftpuser/.ssh
+chown root:root /home/sftpuser/.ssh
+chmod 755 /home/sftpuser/.ssh
+chmod 644 /home/sftpuser/.ssh/authorized_keys
+
+mkdir -p /run/sshd
+service ssh start
+
+mkdir -p /shared/ftpsrv
+echo "[ftpsrv] avvio completato — SFTP chroot su 10.1.0.12:22 (utente sftpuser)"
